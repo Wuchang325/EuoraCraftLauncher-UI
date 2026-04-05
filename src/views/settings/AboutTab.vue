@@ -4,10 +4,10 @@
       <div class="about-card">
         <div class="about-logo">EC</div>
         <h1 class="about-title-text">EuoraCraft Launcher</h1>
-        <p class="about-version">版本 1.0.0</p>
+        <p class="about-version">{{ t('settings.version') }} 1.0.0</p>
         <p class="about-desc">
-          简洁、高效的 Minecraft 启动器<br />
-          我们致力于提供流畅的启动体验与丰富的模组管理功能。
+          {{ t('app.title') }}<br />
+          Minecraft Launcher
         </p>
         
         <div class="about-links">
@@ -28,7 +28,7 @@
         </div>
         
         <div class="about-tech">
-          <div class="tech-title">技术栈</div>
+          <div class="tech-title">Tech Stack</div>
           <div class="tech-tags">
             <span class="tech-tag">Vue 3</span>
             <span class="tech-tag">TypeScript</span>
@@ -47,8 +47,10 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 import { useDialog } from 'naive-ui'
 
+const { t } = useI18n()
 const dialog = useDialog()
 
 const openLink = (url: string) => {
@@ -68,7 +70,7 @@ const openLink = (url: string) => {
 
 <style scoped>
 .tab-pane {
-  max-width: 800px;
+  max-width: 680px;
   margin: 0 auto;
 }
 </style>

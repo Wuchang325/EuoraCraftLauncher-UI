@@ -11,11 +11,12 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    AddPathModal: typeof import('./src/components/modals/AddPathModal.vue')['default']
     BlurText: typeof import('./src/components/bits/BlurText.vue')['default']
     Button: typeof import('./src/components/ui/Button.vue')['default']
     Card: typeof import('./src/components/ui/Card.vue')['default']
+    ContentModal: typeof import('./src/components/modals/ContentModal.vue')['default']
     GlassMessage: typeof import('./src/components/ui/GlassMessage.vue')['default']
+    IconButton: typeof import('./src/components/ui/IconButton.vue')['default']
     Info: typeof import('./src/components/ui/Info.vue')['default']
     Input: typeof import('./src/components/ui/Input.vue')['default']
     Modal: typeof import('./src/components/ui/Modal.vue')['default']

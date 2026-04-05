@@ -3,13 +3,51 @@
     <div class="settings-group">
       <div class="group-title">
         <i class="icon icon-brush" />
-        外观设置
+        {{ t('settings.general') }}
+      </div>
+
+      <!-- 语言选择 -->
+      <div class="setting-item">
+        <div class="setting-info">
+          <div class="setting-label">{{ t('settings.language') }}</div>
+          <div class="setting-desc">Language / 语言</div>
+        </div>
+        <div class="setting-control">
+          <div class="custom-select" :class="{ open: isLangOpen }" ref="langSelectRef">
+            <div class="select-trigger" @click="toggleLangOpen">
+              <span class="selected-text">
+                <span class="lang-option">
+                  <span class="lang-flag">{{ selectedLanguage?.flag }}</span>
+                  <span class="lang-name">{{ selectedLanguage?.name }}</span>
+                </span>
+              </span>
+              <i class="icon icon-arrow-right select-arrow" :class="{ rotated: isLangOpen }" />
+            </div>
+            <transition name="select-dropdown">
+              <div v-show="isLangOpen" class="select-dropdown">
+                <div
+                  v-for="lang in supportedLocales"
+                  :key="lang.code"
+                  class="select-option"
+                  :class="{ active: currentLocale === lang.code }"
+                  @click="handleLanguageChange(lang.code)"
+                >
+                  <div class="option-content">
+                    <span class="lang-flag">{{ lang.flag }}</span>
+                    <span class="lang-name">{{ lang.name }}</span>
+                  </div>
+                  <i v-if="currentLocale === lang.code" class="icon icon-check check-icon" />
+                </div>
+              </div>
+            </transition>
+          </div>
+        </div>
       </div>
 
       <div class="setting-item theme-setting-item">
         <div class="setting-info">
-          <div class="setting-label">主题模式</div>
-          <div class="setting-desc">选择应用程序的外观风格</div>
+          <div class="setting-label">{{ t('settings.theme') }}</div>
+          <div class="setting-desc">{{ t('settings.theme') }}</div>
         </div>
         <div class="setting-control">
           <div class="theme-options">
@@ -21,7 +59,7 @@
               <div class="theme-icon-wrapper">
                 <i class="icon icon-sun" />
               </div>
-              <span class="theme-label">浅色</span>
+              <span class="theme-label">{{ t('settings.themeLight') }}</span>
             </div>
             <div
               class="theme-card"
@@ -31,7 +69,7 @@
               <div class="theme-icon-wrapper">
                 <i class="icon icon-moon" />
               </div>
-              <span class="theme-label">深色</span>
+              <span class="theme-label">{{ t('settings.themeDark') }}</span>
             </div>
             <div
               class="theme-card"
@@ -41,7 +79,7 @@
               <div class="theme-icon-wrapper">
                 <i class="icon icon-settings" />
               </div>
-              <span class="theme-label">跟随系统</span>
+              <span class="theme-label">{{ t('settings.themeSystem') }}</span>
             </div>
           </div>
         </div>
@@ -49,8 +87,8 @@
 
       <div class="setting-item">
         <div class="setting-info">
-          <div class="setting-label">背景模糊</div>
-          <div class="setting-desc">调整背景模糊程度（0-20px）</div>
+          <div class="setting-label">{{ t('settings.backgroundBlur') }}</div>
+          <div class="setting-desc">{{ t('settings.backgroundBlur') }} (0-20px)</div>
         </div>
         <div class="setting-control">
           <div class="slider-container">
@@ -69,8 +107,8 @@
 
       <div class="setting-item">
         <div class="setting-info">
-          <div class="setting-label">主题色</div>
-          <div class="setting-desc">选择全局主题颜色</div>
+          <div class="setting-label">{{ t('settings.primaryColor') }}</div>
+          <div class="setting-desc">{{ t('settings.primaryColor') }}</div>
         </div>
         <div class="setting-control">
           <div class="color-presets">
@@ -93,7 +131,7 @@
                 class="color-input"
                 title="自定义颜色"
               />
-              <span class="custom-color-label">自定义</span>
+              <span class="custom-color-label">Custom</span>
             </div>
           </div>
         </div>
@@ -101,17 +139,17 @@
 
       <div class="setting-item">
         <div class="setting-info">
-          <div class="setting-label">背景图片</div>
-          <div class="setting-desc">设置启动器背景</div>
+          <div class="setting-label">{{ t('settings.background') }}</div>
+          <div class="setting-desc">{{ t('settings.background') }}</div>
         </div>
         <div class="setting-control">
           <div class="input-group">
             <UiInput 
               :model-value="currentSettings.backgroundImage"
               @update:model-value="handleBgImageInput"
-              placeholder="输入图片路径或URL"
+              :placeholder="t('settings.background') + ' URL'"
             />
-            <UiButton variant="secondary" @click="selectLocalImage">浏览</UiButton>
+            <UiButton variant="secondary" @click="selectLocalImage">{{ t('common.browse') }}</UiButton>
           </div>
         </div>
       </div>
@@ -120,13 +158,13 @@
     <div class="settings-group">
       <div class="group-title">
         <i class="icon icon-download" />
-        下载设置
+        {{ t('settings.downloadSource') }}
       </div>
 
       <div class="setting-item">
         <div class="setting-info">
-          <div class="setting-label">下载源</div>
-          <div class="setting-desc">选择游戏资源下载来源</div>
+          <div class="setting-label">{{ t('settings.downloadSource') }}</div>
+          <div class="setting-desc">{{ t('settings.downloadSource') }}</div>
         </div>
         <div class="setting-control">
           <div class="custom-select" :class="{ open: isOpen }" ref="selectRef">
@@ -157,7 +195,7 @@
 
       <div class="setting-item">
         <div class="setting-info">
-          <div class="setting-label">并发下载数</div>
+          <div class="setting-label">{{ t('settings.downloadThreads') }}</div>
         </div>
         <div class="setting-control">
           <div class="slider-container">
@@ -169,7 +207,7 @@
               step="1"
               @change="handleThreadsChange"
             />
-            <span class="slider-value">{{ currentSettings.downloadThreads }} 线程</span>
+            <span class="slider-value">{{ currentSettings.downloadThreads }} {{ t('settings.threads') }}</span>
           </div>
         </div>
       </div>
@@ -179,19 +217,13 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useGlassMessage } from '@/composables/useGlassMessage'
+import { supportedLocales, setLocale, getCurrentLocale, type LocaleCode } from '@/i18n'
 import { useTheme, type ThemeMode, presetColors } from '@/composables/useTheme'
 import UiButton from '@/components/ui/Button.vue'
 import UiInput from '@/components/ui/Input.vue'
-import {
-  getBackgroundConfig,
-  getBackgroundImage,
-  updateBackgroundImage,
-  updateThemeConfig,
-  updateDownloadConfig,
-  selectLocalImage as apiSelectLocalImage,
-  loadImageFromUrl
-} from '@/utils/api'
+import { api } from '@/utils/api'
 
 const props = defineProps<{
   settings: any
@@ -201,7 +233,9 @@ const emit = defineEmits<{
   (e: 'update:settings', value: any): void
 }>()
 
+const { t, locale } = useI18n()
 const message = useGlassMessage()
+const currentLocale = computed(() => locale.value as LocaleCode)
 const {
   setThemeMode,
   setPrimaryColor,
@@ -221,18 +255,28 @@ const currentSettings = computed(() => ({
 const isOpen = ref(false)
 const selectRef = ref<HTMLElement | null>(null)
 
-const downloadOptions: Array<{value: 'official' | 'bmclapi' | 'mcbbs', label: string, desc: string}> = [
-  { value: 'official', label: '官方源', desc: 'Minecraft 官方下载源' },
-  { value: 'bmclapi', label: 'BMCLAPI', desc: '国内镜像，速度较快' },
-  { value: 'mcbbs', label: 'MCBBS', desc: '国内镜像，稳定可靠' }
-]
+const isLangOpen = ref(false)
+const langSelectRef = ref<HTMLElement | null>(null)
+
+const downloadOptions = computed(() => [
+  { value: 'official' as const, label: t('settings.sourceOfficial'), desc: 'Minecraft Official' },
+  { value: 'bmclapi' as const, label: 'BMCLAPI', desc: t('settings.sourceBmclapiDesc') }
+])
 
 const selectedDownloadSource = computed(() => 
-  downloadOptions.find(o => o.value === currentSettings.value.downloadSource)
+  downloadOptions.value.find(o => o.value === currentSettings.value.downloadSource)
+)
+
+const selectedLanguage = computed(() =>
+  supportedLocales.find(l => l.code === currentLocale.value)
 )
 
 const toggleOpen = () => {
   isOpen.value = !isOpen.value
+}
+
+const toggleLangOpen = () => {
+  isLangOpen.value = !isLangOpen.value
 }
 
 const updateField = (field: string, value: any) => {
@@ -242,8 +286,6 @@ const updateField = (field: string, value: any) => {
 const handleThemeChange = async (mode: ThemeMode) => {
   updateField('mode', mode)
   setThemeMode(mode)
-  
-  message.success(`已切换到${mode === 'light' ? '浅色' : mode === 'dark' ? '深色' : '跟随系统'}模式`)
 }
 
 const handleColorChange = async (color: string) => {
@@ -265,21 +307,21 @@ const handleBlurChange = async (e: Event) => {
 
 const selectLocalImage = async () => {
   try {
-    const result = await apiSelectLocalImage()
+    const result = await api.selectLocalImage()
     if (result.success && result.data?.path) {
       updateField('backgroundImage', result.data.path)
-      await updateBackgroundImage('custom', result.data.path)
+      await api.updateBackgroundImage('custom', result.data.path)
       
-      const imgData = await getBackgroundImage()
+      const imgData = await api.getBackgroundImage()
       if (imgData.success && imgData.data?.base64) {
         setBackgroundImage(imgData.data.base64, result.data.path)
       }
-      message.success('背景图片设置成功')
+      message.success(t('common.success'))
     } else {
-      message.error(result.message || '选择图片失败')
+      message.error(result.message || t('common.error'))
     }
   } catch (error: any) {
-    message.error(error.message || '选择图片失败')
+    message.error(error.message || t('common.error'))
   }
 }
 
@@ -293,42 +335,71 @@ const handleBgImageInput = (val: string | number) => {
   bgTimer = setTimeout(async () => {
     if (!strVal) {
       setBackgroundImage('', '')
-      await updateBackgroundImage('none', '')
+      await api.updateBackgroundImage('none', '')
       return
     }
     
     if (strVal.startsWith('http')) {
       try {
-        message.loading('正在加载网络图片...')
-        const result = await loadImageFromUrl(strVal)
+        message.loading('Loading...')
+        console.log('[Background] 开始下载图片:', strVal)
+        // 1. 下载网络图片到本地
+        const result = await api.loadImageFromUrl(strVal)
         if (result.success && result.data?.path) {
-          updateField('backgroundImage', result.data.path)
-          const imgData = await getBackgroundImage()
-          if (imgData.success && imgData.data?.base64) {
-            setBackgroundImage(imgData.data.base64, result.data.path)
+          const localPath = result.data.path
+          console.log('[Background] 图片下载成功, 本地路径:', localPath)
+          // 2. 先更新后端配置，设置新的背景图路径
+          await api.updateBackgroundImage('custom', localPath)
+          if (!updateResult.success) {
+            console.error('[Background] 更新配置失败:', updateResult.message)
+            message.error('更新配置失败: ' + updateResult.message)
+            return
           }
-          message.success('网络图片加载成功')
+          // 3. 更新前端输入框显示为本地路径
+          updateField('backgroundImage', localPath)
+          // 4. 获取背景图数据（此时配置已更新）
+          console.log('[Background] 开始获取背景图数据...')
+          const imgData = await api.getBackgroundImage()
+          
+          if (imgData.success && imgData.data?.base64) {
+            console.log('[Background] Base64 数据长度:', imgData.data.base64.length)
+            console.log('[Background] Base64 数据前100字符:', imgData.data.base64.substring(0, 100))
+            // 5. 设置背景图显示
+            setBackgroundImage(imgData.data.base64, localPath)
+            console.log('[Background] setBackgroundImage 调用完成')
+            // 检查 CSS 变量是否正确设置
+            setTimeout(() => {
+              const bgImage = getComputedStyle(document.documentElement).getPropertyValue('--bg-image')
+              console.log('[Background] CSS --bg-image 值:', bgImage.substring(0, 100))
+            }, 100)
+            message.success(t('common.success'))
+          } else {
+            console.error('[Background] 获取背景图数据失败:', imgData.message)
+            message.error('加载背景图失败: ' + imgData.message)
+          }
         } else {
-          message.error(result.message || '加载网络图片失败')
+          console.error('[Background] 图片下载失败:', result.message)
+          message.error(result.message || t('common.error'))
         }
-      } catch (error) {
-        message.error('加载网络图片失败')
+      } catch (error: any) {
+        console.error('[Background] 处理异常:', error)
+        message.error(t('common.error'))
       }
     }
   }, 800)
 }
 
-const handleDownloadSourceChange = async (value: 'official' | 'bmclapi' | 'mcbbs') => {
+const handleDownloadSourceChange = async (value: 'official' | 'bmclapi') => {
   updateField('downloadSource', value)
   isOpen.value = false
   
   try {
-    await updateDownloadConfig({
+    await api.updateDownloadConfig({
       mirror_source: value,
       download_threads: currentSettings.value.downloadThreads
     })
   } catch (error) {
-    message.error('保存下载源设置失败')
+    message.error(t('common.error'))
   }
 }
 
@@ -337,18 +408,21 @@ const handleThreadsChange = async (e: Event) => {
   updateField('downloadThreads', val)
   
   try {
-    await updateDownloadConfig({
+    await api.updateDownloadConfig({
       mirror_source: currentSettings.value.downloadSource,
       download_threads: val
     })
   } catch (error) {
-    message.error('保存下载设置失败')
+    message.error(t('common.error'))
   }
 }
 
 const handleClickOutside = (e: MouseEvent) => {
   if (selectRef.value && !selectRef.value.contains(e.target as Node)) {
     isOpen.value = false
+  }
+  if (langSelectRef.value && !langSelectRef.value.contains(e.target as Node)) {
+    isLangOpen.value = false
   }
 }
 
@@ -360,6 +434,11 @@ onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
   if (bgTimer) clearTimeout(bgTimer)
 })
+
+const handleLanguageChange = async (langCode: LocaleCode) => {
+  isLangOpen.value = false
+  await setLocale(langCode)
+}
 </script>
 
 <style scoped src="@/style/views/Settings.css"></style>

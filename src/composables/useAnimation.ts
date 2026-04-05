@@ -6,7 +6,7 @@ export function useFadeIn(
   elementRef: any, 
   options: { delay?: number; y?: number; duration?: number } = {}
 ) {
-  const { delay = 0, y = 20, duration = 0.4 } = options
+  const { delay = 0, y = 20, duration = 0.25 } = options
   
   const animate = () => {
     if (!elementRef.value) return
@@ -30,9 +30,9 @@ export function useFadeIn(
 export function useStagger(
   containerRef: any, 
   itemSelector: string = '> *',
-  options: { delay?: number; stagger?: number } = {}
+  options: { delay?: number; stagger?: number; duration?: number } = {}
 ) {
-  const { delay = 0.1, stagger = 0.05 } = options
+  const { delay = 0.1, stagger = 0.05, duration = 0.25 } = options
   
   const animate = async () => {
     await nextTick()
@@ -47,7 +47,7 @@ export function useStagger(
       { 
         opacity: 1, 
         y: 0, 
-        duration: 0.3, 
+        duration, 
         stagger,
         delay,
         ease: 'power2.out' 
@@ -61,7 +61,7 @@ export function useStagger(
 // 页面过渡
 export function usePageTransition() {
   const beforeEnter = (el: Element) => {
-    gsap.set(el, { opacity: 0, y: 10 })
+    gsap.set(el, { opacity: 0, y: 8 })
   }
   
   const enter = (el: Element, done: () => void) => {
@@ -77,7 +77,7 @@ export function usePageTransition() {
   const leave = (el: Element, done: () => void) => {
     gsap.to(el, {
       opacity: 0,
-      y: -10,
+      y: -8,
       duration: 0.2,
       ease: 'power2.in',
       onComplete: done
@@ -92,7 +92,7 @@ export function useButtonFeedback() {
   const onClick = (event: MouseEvent) => {
     const btn = event.currentTarget as HTMLElement
     gsap.to(btn, {
-      scale: 0.97,
+      scale: 0.96,
       duration: 0.1,
       yoyo: true,
       repeat: 1,

@@ -34,7 +34,7 @@ const animate = () => {
       opacity: 1,
       filter: 'blur(0px)',
       y: 0,
-      duration: 0.8,
+      duration: 0.5,
       stagger: props.delay / 1000,
       ease: 'power2.out'
     }

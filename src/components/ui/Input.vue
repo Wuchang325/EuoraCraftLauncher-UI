@@ -76,7 +76,7 @@ const handleClear = () => {
   background-color: var(--bg-app);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  transition: all 0.2s ease;
+  transition: var(--transition-fast);
   width: 100%;
   position: relative;
 }

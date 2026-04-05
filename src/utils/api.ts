@@ -1,4 +1,4 @@
-// API 客户端
+
 
 import type {
   ApiResponse,
@@ -8,6 +8,7 @@ import type {
   GameConfig,
   ThemeConfig,
   DownloadConfig,
+  LocaleConfig,
   JavaInstallation,
   MinecraftVersion,
   VersionFilter,
@@ -20,7 +21,6 @@ import type {
   ScannedVersion,
 } from '@/types/api'
 
-// 配置
 const CONFIG = {
   DEBUG: import.meta.env.DEV,
   MAX_RETRIES: 3,
@@ -28,7 +28,6 @@ const CONFIG = {
   TIMEOUT: 30000
 } as const
 
-// 日志工具
 class Logger {
   static log(...args: any[]) {
     if (CONFIG.DEBUG) {
@@ -97,7 +96,6 @@ class ApiValidator {
   }
 }
 
-// API 客户端核心
 class ApiClient {
   private retryCount = 0
   private requestQueue: Array<() => Promise<any>> = []
@@ -239,7 +237,6 @@ class ApiClient {
   }
 }
 
-// API 服务
 class ApiService {
   private client = new ApiClient()
 
@@ -293,6 +290,10 @@ class ApiService {
     return this.client.call<{ path: string }>('select_local_image')
   }
 
+  async selectJavaExecutable() {
+    return this.client.call<{ path: string }>('select_java_executable')
+  }
+
   async getGameConfig() {
     return this.client.call<GameConfig>('get_game_config')
   }
@@ -319,6 +320,15 @@ class ApiService {
 
   async updateDownloadConfig(config: Partial<DownloadConfig>) {
     return this.client.call('update_download_config', config)
+  }
+
+  // 语言配置
+  async getLocaleConfig() {
+    return this.client.call<LocaleConfig>('get_locale_config')
+  }
+
+  async updateLocaleConfig(locale: string) {
+    return this.client.call('update_locale_config', locale)
   }
 
   // 文件选择
@@ -436,70 +446,108 @@ class ApiService {
       connectivity: boolean
     }>('diagnose_api')
   }
+
+  // 账户管理
+  async getAccounts() {
+    return this.client.call<{
+      accounts: Array<{
+        id: string
+        alias: string
+        type: 'microsoft' | 'offline'
+        email: string
+        uuid: string
+        isCurrent: boolean
+        skinUrl?: string
+      }>
+      current: {
+        id: string
+        alias: string
+        type: 'microsoft' | 'offline'
+        email: string
+        uuid: string
+        skinUrl?: string
+      } | null
+    }>('get_accounts')
+  }
+
+  async getCurrentAccount() {
+    return this.client.call<{
+      id: string
+      alias: string
+      type: 'microsoft' | 'offline'
+      email: string
+      uuid: string
+      skinUrl?: string
+    } | null>('get_current_account')
+  }
+
+  async addOfflineAccount(username: string) {
+    return this.client.call<{
+      account?: {
+        id: string
+        alias: string
+        type: 'microsoft' | 'offline'
+        email: string
+        uuid: string
+      }
+    }>('add_offline_account', username)
+  }
+
+  async startMicrosoftLogin() {
+    return this.client.call<{
+      status: 'pending' | 'completed' | 'error'
+      userCode?: string
+      verificationUri?: string
+      message: string
+    }>('start_microsoft_login')
+  }
+
+  async completeMicrosoftLogin() {
+    return this.client.call<{
+      account?: {
+        id: string
+        alias: string
+        type: 'microsoft' | 'offline'
+        email: string
+      }
+    }>('complete_microsoft_login')
+  }
+
+  async switchAccount(accountId: string) {
+    return this.client.call('switch_account', accountId)
+  }
+
+  async removeAccount(accountId: string) {
+    return this.client.call('remove_account', accountId)
+  }
+
+  async refreshAccountProfile(accountId: string) {
+    return this.client.call('refresh_account_profile', accountId)
+  }
 }
 
 // 导出
 export const api = new ApiService()
 
-// 向后兼容的导出（逐步迁移）
-export const getBackgroundConfig = () => api.getBackgroundConfig()
-export const getBackgroundImage = () => api.getBackgroundImage()
-export const updateBackgroundImage = (imageType: string, imagePath: string) => 
-  api.updateBackgroundImage(imageType, imagePath)
-export const loadImageFromUrl = (url: string) => api.loadImageFromUrl(url)
-export const selectLocalImage = () => api.selectLocalImage()
-export const getGameConfig = () => api.getGameConfig()
-export const updateGameConfig = (config: Partial<GameConfig>) => api.updateGameConfig(config)
-export const getThemeConfig = () => api.getThemeConfig()
-export const updateThemeConfig = (config: Partial<ThemeConfig>) => api.updateThemeConfig(config)
-export const getDownloadConfig = () => api.getDownloadConfig()
-export const updateDownloadConfig = (config: Partial<DownloadConfig>) => api.updateDownloadConfig(config)
-export const minimizeWindow = () => api.minimizeWindow()
-export const closeWindow = () => api.closeWindow()
-export const selectDirectory = () => api.selectDirectory()
-
 // 全局诊断函数
 if (typeof window !== 'undefined') {
-  ;(window as any).diagnoseApi = async () => {
-    console.log('=== API 诊断开始 ===')
-    
-    // 1. 检查环境
-    console.log('1. 检查 window 对象:', typeof window !== 'undefined' ? '✓ 存在' : '✗ 不存在')
-    console.log('2. 检查 pywebview:', window.pywebview ? '✓ 存在' : '✗ 不存在')
-    console.log('3. 检查 api:', window.pywebview?.api ? '✓ 存在' : '✗ 不存在')
+  (window as any).diagnoseApi = async () => {
+    console.log('=== API 诊断 ===')
+    console.log('window:', typeof window !== 'undefined' ? '✓' : '✗')
+    console.log('pywebview:', window.pywebview ? '✓' : '✗')
+    console.log('api:', window.pywebview?.api ? '✓' : '✗')
     
     if (window.pywebview?.api) {
-      console.log('4. 可用方法列表:', Object.keys(window.pywebview.api))
-      
-      // 5. 测试 ping
-      console.log('5. 测试 ping...')
+      console.log('可用方法:', Object.keys(window.pywebview.api))
       try {
         const pingResult = await api.ping()
-        console.log('   ping 结果:', pingResult)
+        console.log('ping:', pingResult)
       } catch (e) {
-        console.error('   ping 失败:', e)
-      }
-      
-      // 6. 测试获取配置
-      console.log('6. 测试 get_theme_config...')
-      try {
-        const theme = await api.getThemeConfig()
-        console.log('   主题配置:', theme)
-      } catch (e) {
-        console.error('   获取失败:', e)
+        console.error('ping 失败:', e)
       }
     }
-    
     console.log('=== 诊断结束 ===')
   }
-
-  // 页面加载完成后自动诊断
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      console.log('API 系统已加载，在 Console 输入 diagnoseApi() 运行诊断')
-    }, 1000)
-  })
 }
 
-// 默认导出
 export default api

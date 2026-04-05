@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @import './base.css';
+@import './animations.css';
 @import './layout.css';
 @import './components/TitleBar.css';
 @import './components/SideBar.css';
@@ -29,7 +30,7 @@ img {
 a {
   color: var(--color-primary);
   text-decoration: none;
-  transition: color 0.2s var(--ease-smooth);
+  transition: color var(--duration-fast) var(--ease-standard);
 }
 
 a:hover {
@@ -79,7 +80,7 @@ a:hover {
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 12px var(--shadow-color);
-  transition: all 0.3s var(--ease-spring);
+  transition: var(--transition-spring);
 }
 
 .card:hover {

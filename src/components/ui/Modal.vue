@@ -7,9 +7,15 @@
             <slot name="header">
               <h3 class="modal-title">{{ title }}</h3>
             </slot>
-            <button v-if="closable" class="modal-close" @click="close">
-              <i class="icon icon-close"></i>
-            </button>
+            <UiButton 
+              v-if="closable" 
+              variant="ghost"
+              shape="circle"
+              size="sm"
+              icon="icon-close"
+              class="modal-close"
+              @click="close"
+            />
           </div>
           
           <div class="modal-body">
@@ -26,6 +32,8 @@
 </template>
 
 <script setup lang="ts">
+import UiButton from '@/components/ui/Button.vue'
+
 interface Props {
   visible: boolean
   title?: string
@@ -40,7 +48,7 @@ interface Emits {
 
 const props = withDefaults(defineProps<Props>(), {
   closable: true,
-  maskClosable: true
+  maskClosable: false
 })
 
 const emit = defineEmits<Emits>()
@@ -64,13 +72,15 @@ const handleOverlayClick = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  /* 禁止点击穿透 */
+  pointer-events: auto;
 }
 
 .modal-container {
@@ -136,7 +146,7 @@ const handleOverlayClick = () => {
 /* 模态框动画 */
 .modal-enter-active,
 .modal-leave-active {
-  transition: all 0.3s ease;
+  transition: all var(--duration-normal) var(--ease-standard);
 }
 
 .modal-enter-from,

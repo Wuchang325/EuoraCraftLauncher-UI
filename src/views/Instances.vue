@@ -3,26 +3,28 @@
     <div class="header">
       <h2 class="title">
         <i class="icon icon-folder" />
-        实例管理
+        {{ t('instances.title') }}
       </h2>
-      <UiButton icon="icon-add">新建实例</UiButton>
+      <UiButton icon="icon-add">{{ t('common.add') }}</UiButton>
     </div>
     
     <div class="content">
       <div class="placeholder-content">
         <i class="icon icon-folder" style="font-size: 48px; color: var(--text-disabled);" />
-        <p>实例管理功能开发中...</p>
-        <UiButton variant="secondary" @click="createInstance">创建一个？</UiButton>
+        <p>{{ t('common.loading') }}</p>
+        <UiButton variant="secondary" @click="createInstance">{{ t('common.add') }}</UiButton>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useMessage } from 'naive-ui'
+import { useI18n } from 'vue-i18n'
+import { useGlassMessage } from '@/composables/useGlassMessage'
 import UiButton from '@/components/ui/Button.vue'
 
-const message = useMessage()
+const { t } = useI18n()
+const message = useGlassMessage()
 
 const createInstance = () => {
   message.info('创建实例功能待实现')
@@ -31,25 +33,25 @@ const createInstance = () => {
 
 <style scoped>
 .instances-container {
-  padding: 20px;
+  padding: 0;
   height: 100%;
   display: flex;
   flex-direction: column;
 }
 
 .header {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .title {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   margin: 0;
   color: var(--text-primary);
 }
@@ -59,7 +61,7 @@ const createInstance = () => {
   background: var(--bg-surface);
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);
-  padding: 20px;
+  padding: 16px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -71,6 +73,6 @@ const createInstance = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 </style>

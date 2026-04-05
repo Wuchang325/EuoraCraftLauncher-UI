@@ -1,9 +1,4 @@
-/**
- * API 类型定义
- * 统一前后端数据交互格式
- */
 
-// ========== 基础响应格式 ==========
 
 export interface ApiResponse<T = any> {
   success: boolean
@@ -22,7 +17,7 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
   }
 }
 
-// ========== 配置相关类型 ==========
+
 
 export interface LauncherConfig {
   version: string
@@ -45,19 +40,35 @@ export interface BackgroundConfig {
   image_base64?: string
 }
 
+export interface GamePath {
+  name: string
+  path: string
+}
+
 export interface GameConfig {
-  minecraft_paths: string[]
-  java_auto_select: boolean
-  java_path: string
-  memory_size: number
+  minecraft_paths: (string | GamePath)[]
+  java_auto?: boolean
+  java_path?: string
+  memory_auto?: boolean
+  memory_size?: number
+  fullscreen?: boolean
   java_list?: JavaInstallation[]
 }
 
 export interface JavaInstallation {
   path: string
   version: string
-  vendor: string
-  is_64bit: boolean
+  major_version: number
+  java_type: string
+  arch: string
+  sources: string[]
+}
+
+export interface SystemMemory {
+  total_mb: number
+  used_mb: number
+  free_mb: number
+  percent_used: number
 }
 
 export interface ThemeConfig {
@@ -67,11 +78,15 @@ export interface ThemeConfig {
 }
 
 export interface DownloadConfig {
-  mirror_source: 'official' | 'bmclapi' | 'mcbbs'
+  mirror_source: 'official' | 'bmclapi'
   download_threads: number
 }
 
-// ========== 版本管理类型 ==========
+export interface LocaleConfig {
+  locale: string
+}
+
+
 
 export interface MinecraftVersion {
   id: string
@@ -111,10 +126,10 @@ export interface ScannedVersion {
   loader_type: string | null
   version: string | null
   error: string | null
-  path: string
+  path?: string
 }
 
-// ========== 实例管理类型 ==========
+
 
 export interface GameInstance {
   id: string
@@ -144,7 +159,7 @@ export interface InstanceCreateRequest {
   }
 }
 
-// ========== 模组管理类型 ==========
+
 
 export interface ModInfo {
   id: string
@@ -175,7 +190,7 @@ export interface ModSearchFilter {
   pageSize?: number
 }
 
-// ========== 下载任务类型 ==========
+
 
 export interface DownloadTask {
   id: string
@@ -192,7 +207,7 @@ export interface DownloadTask {
   endTime?: number
 }
 
-// ========== 窗口控制类型 ==========
+
 
 export interface WindowPosition {
   x: number
@@ -201,7 +216,7 @@ export interface WindowPosition {
   height: number
 }
 
-// ========== API 方法类型 ==========
+
 
 export interface ApiMethods {
   // 测试连接
@@ -232,12 +247,16 @@ export interface ApiMethods {
   get_download_config(): Promise<ApiResponse<DownloadConfig>>
   update_download_config(config: Partial<DownloadConfig>): Promise<ApiResponse>
   
+  // 语言配置
+  get_locale_config(): Promise<ApiResponse<LocaleConfig>>
+  update_locale_config(locale: string): Promise<ApiResponse>
+  
   // 文件选择
   select_directory(): Promise<ApiResponse<{ path: string }>>
   select_file(filters?: { name: string; extensions: string[] }[]): Promise<ApiResponse<{ path: string }>>
   
   // 版本管理
-  get_minecraft_versions(filter?: VersionFilter): Promise<PaginatedResponse<MinecraftVersion>>
+  get_minecraft_versions(filter?: VersionFilter): Promise<ApiResponse<MinecraftVersion[]>>
   scan_versions(paths: string[]): Promise<ApiResponse<ScannedVersion[]>>
   get_version_details(versionId: string): Promise<ApiResponse<MinecraftVersion>>
   install_version(versionId: string, options?: { gamePath?: string }): Promise<ApiResponse<DownloadTask>>
@@ -272,4 +291,34 @@ export interface ApiMethods {
     apiMethods: string[]
     connectivity: boolean
   }>>
+  
+  // 账户管理
+  get_accounts(): Promise<ApiResponse<{
+    accounts: MinecraftAccount[]
+    current: MinecraftAccount | null
+  }>>
+  get_current_account(): Promise<ApiResponse<MinecraftAccount | null>>
+  add_offline_account(username: string): Promise<ApiResponse<{ account?: MinecraftAccount }>>
+  start_microsoft_login(): Promise<ApiResponse<{
+    status: 'pending' | 'completed' | 'error'
+    userCode?: string
+    verificationUri?: string
+    message: string
+  }>>
+  complete_microsoft_login(): Promise<ApiResponse<{ account?: MinecraftAccount }>>
+  switch_account(accountId: string): Promise<ApiResponse>
+  remove_account(accountId: string): Promise<ApiResponse>
+  refresh_account_profile(accountId: string): Promise<ApiResponse>
+}
+
+
+
+export interface MinecraftAccount {
+  id: string
+  alias: string
+  type: 'microsoft' | 'offline'
+  email: string
+  uuid: string
+  isCurrent?: boolean
+  skinUrl?: string
 }

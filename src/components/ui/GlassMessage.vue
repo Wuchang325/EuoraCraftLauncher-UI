@@ -1,52 +1,60 @@
 <template>
-  <div class="glass-message-container">
-    <transition-group name="message-list">
-      <div
-        v-for="msg in messages"
-        :key="msg.id"
-        class="glass-message"
-        :class="[msg.type, { 'closable': msg.closable }]"
-        @mouseenter="pauseTimer(msg)"
-        @mouseleave="resumeTimer(msg)"
-      >
-        <div class="message-icon">
-          <n-icon size="20" :color="getIconColor(msg.type)">
-            <component :is="getIcon(msg.type)" />
-          </n-icon>
-        </div>
+  <Teleport to="body">
+    <div class="glass-message-container">
+      <transition-group name="message-list">
+        <div
+          v-for="msg in messages"
+          :key="msg.id"
+          class="glass-message"
+          :class="[msg.type, { 'closable': msg.closable }]"
+          @mouseenter="pauseTimer(msg)"
+          @mouseleave="resumeTimer(msg)"
+        >
+          <div class="message-icon">
+            <n-icon size="20" :color="getIconColor(msg.type)">
+              <component :is="getIcon(msg.type)" />
+            </n-icon>
+          </div>
 
-        <div class="message-content">
-          <div v-if="msg.title" class="message-title">{{ msg.title }}</div>
-          <div class="message-body">{{ msg.content }}</div>
-        </div>
+          <div class="message-content">
+            <div v-if="msg.title" class="message-title">{{ msg.title }}</div>
+            <div class="message-body">{{ msg.content }}</div>
+          </div>
 
-        <button v-if="msg.closable" class="close-btn" @click="remove(msg.id)">
-          <n-icon size="14"><CloseOutline /></n-icon>
-        </button>
-
-        <div v-if="msg.duration > 0" class="message-progress">
-          <div 
-            class="progress-bar" 
-            :style="{ 
-              width: `${progressMap[msg.id] || 100}%`,
-              backgroundColor: getProgressColor(msg.type)
-            }"
+          <UiButton 
+            v-if="msg.closable" 
+            variant="ghost"
+            shape="circle"
+            size="sm"
+            icon="icon-close"
+            class="close-btn"
+            @click="remove(msg.id)"
           />
+
+          <div v-if="msg.duration > 0" class="message-progress">
+            <div 
+              class="progress-bar" 
+              :style="{ 
+                width: `${progressMap[msg.id] || 100}%`,
+                backgroundColor: getProgressColor(msg.type)
+              }"
+            />
+          </div>
         </div>
-      </div>
-    </transition-group>
-  </div>
+      </transition-group>
+    </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { NIcon } from 'naive-ui'
+import UiButton from '@/components/ui/Button.vue'
 import {
   CheckmarkCircleOutline,
   CloseCircleOutline,
   WarningOutline,
-  InformationCircleOutline,
-  CloseOutline
+  InformationCircleOutline
 } from '@vicons/ionicons5'
 
 export type MessageType = 'success' | 'error' | 'warning' | 'info' | 'loading'
@@ -185,17 +193,13 @@ defineExpose({
 .glass-message-container {
   position: fixed;
   bottom: 24px;
-  left: 84px;
-  z-index: 9999;
+  left: 24px;
+  z-index: 99999;
   display: flex;
   flex-direction: column;
   gap: 12px;
   pointer-events: none;
   width: 320px;
-}
-
-:global(.sidebar.expanded) ~ .main-content .glass-message-container {
-  left: 260px;
 }
 
 .glass-message {
@@ -212,7 +216,7 @@ defineExpose({
   pointer-events: all;
   position: relative;
   overflow: hidden;
-  transition: all 0.3s var(--ease-spring);
+  transition: var(--transition-spring);
 }
 
 .glass-message.success { border-left: 4px solid #10b981; }

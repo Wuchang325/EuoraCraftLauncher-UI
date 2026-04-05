@@ -100,12 +100,12 @@ onMounted(() => {
 .ui-tabs {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 4px;
+  gap: 4px;
+  padding: 3px;
   background-color: var(--bg-surface);
   border-radius: var(--radius-lg);
   position: relative;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   border: 1px solid var(--border-color);
   width: fit-content;
   backdrop-filter: blur(var(--blur-md));
@@ -115,13 +115,12 @@ onMounted(() => {
 .tabs-indicator {
   position: absolute;
   bottom: 0;
-  height: 3px;
+  height: 2px;
   background-color: var(--color-primary);
-  border-radius: 3px 3px 0 0;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 2px 2px 0 0;
+  transition: all var(--duration-normal) var(--ease-standard);
   pointer-events: none;
   opacity: 0;
-  box-shadow: 0 -2px 8px rgba(59, 130, 246, 0.3);
   z-index: 2;
 }
 
@@ -129,7 +128,7 @@ onMounted(() => {
   position: absolute;
   background-color: var(--color-primary-light);
   border-radius: var(--radius-md);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--duration-normal) var(--ease-standard);
   pointer-events: none;
   opacity: 0;
   z-index: 0;
@@ -137,16 +136,16 @@ onMounted(() => {
 
 .tab-item {
   position: relative;
-  padding: 8px 16px;
+  padding: 6px 12px;
   border-radius: var(--radius-md);
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 14px;
+  gap: 5px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--text-secondary);
-  transition: all 0.2s ease;
+  transition: var(--transition-fast);
   z-index: 1;
   user-select: none;
 }
@@ -162,6 +161,6 @@ onMounted(() => {
 }
 
 .tab-item .icon {
-  font-size: 16px;
+  font-size: 14px;
 }
 </style>

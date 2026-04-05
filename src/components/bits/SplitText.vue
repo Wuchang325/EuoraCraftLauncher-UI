@@ -33,7 +33,7 @@ const animate = () => {
       opacity: 1,
       y: 0,
       rotateX: 0,
-      duration: props.duration,
+      duration: props.duration || 0.4,
       stagger: props.stagger,
       delay: props.delay / 1000,
       ease: 'back.out(1.7)'

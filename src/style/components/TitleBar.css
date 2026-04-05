@@ -1,10 +1,10 @@
 /* ==================== 标题栏样式 ==================== */
 .title-bar {
-  height: 40px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 12px;
+  padding: 0 10px;
   background-color: var(--bg-titlebar);
   border-bottom: 1px solid var(--border-color);
   -webkit-app-region: drag;
@@ -16,80 +16,68 @@
 .title-bar-left {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding-left: 8px;
+  gap: 6px;
+  padding-left: 6px;
 }
 
 .app-logo {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   object-fit: contain;
 }
 
 .app-name {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-primary);
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 }
 
 .title-bar-right {
   display: flex;
   align-items: center;
   -webkit-app-region: no-drag;
-  gap: 4px;
+  gap: 2px;
 }
 
 /* --- 窗口控制按钮 --- */
 .control-btn {
-  width: 36px;
-  height: 28px;
-  border: none;
-  background: transparent;
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s var(--ease-smooth);
-  font-size: 12px;
-  border-radius: var(--radius-sm);
+  /* UiButton 组件已提供基础样式，这里只覆盖特定样式 */
 }
 
 .control-btn:hover {
-  background-color: var(--bg-surface-hover);
-}
-
-.control-btn:active {
-  background-color: var(--bg-surface-active);
+  background-color: var(--bg-surface-hover) !important;
 }
 
 .control-btn.close-btn:hover {
-  background-color: #e81123;
-  color: white;
-}
-
-.control-btn.close-btn:active {
-  background-color: #c50f1f;
-  color: white;
+  background-color: #e81123 !important;
+  color: white !important;
 }
 
 /* --- 主题切换按钮 --- */
-.theme-toggle-btn {
-  width: 28px;
-  height: 28px;
-  border: none;
-  background: transparent;
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s var(--ease-smooth);
-  border-radius: var(--radius-sm);
+.theme-toggle-btn:hover {
+  color: var(--color-primary) !important;
+  background-color: var(--bg-surface-hover) !important;
 }
 
-.theme-toggle-btn:hover {
-  color: var(--color-primary);
-  background-color: var(--bg-surface-hover);
+/* --- 全屏弹窗模式 --- */
+.modal-close-btn {
+  -webkit-app-region: no-drag;
+  margin-right: 4px;
+}
+
+.modal-close-btn:hover {
+  color: var(--text-primary) !important;
+  background-color: var(--bg-surface-hover) !important;
+}
+
+.modal-close-btn .icon {
+  font-size: 16px;
+}
+
+.modal-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.3px;
 }

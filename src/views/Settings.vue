@@ -20,30 +20,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import gsap from 'gsap'
 import UiTabs from '@/components/ui/Tabs.vue'
 import GeneralTab from './settings/GeneralTab.vue'
 import GameTab from './settings/GameTab.vue'
 import AboutTab from './settings/AboutTab.vue'
-import {
-  getThemeConfig,
-  getBackgroundConfig,
-  getGameConfig,
-  getDownloadConfig
-} from '@/utils/api'
+import { api } from '@/utils/api'
 import { useTheme } from '@/composables/useTheme'
 
+const { t } = useI18n()
 const { themeMode, primaryColor, blurAmount, backgroundImage, backgroundImagePath, updateTheme, setBackgroundImage } = useTheme()
 
 const mainRef = ref<HTMLElement | null>(null)
 const activeTab = ref('general')
 
-const tabs = [
-  { id: 'general', label: '通用', icon: 'icon-settings' },
-  { id: 'game', label: '游戏设置', icon: 'icon-game' },
-  { id: 'about', label: '关于', icon: 'icon-info' }
-]
+const tabs = computed(() => [
+  { id: 'general', label: t('settings.general'), icon: 'icon-settings' },
+  { id: 'game', label: t('settings.game'), icon: 'icon-game' },
+  { id: 'about', label: t('settings.about'), icon: 'icon-info' }
+])
 
 const settings = reactive({
   mode: 'system',
@@ -77,19 +74,11 @@ const initSettings = async () => {
     })
     
     const [gameRes, downloadRes] = await Promise.all([
-      getGameConfig().catch(() => null),
-      getDownloadConfig().catch(() => null)
+      api.getGameConfig().catch(() => null),
+      api.getDownloadConfig().catch(() => null)
     ])
 
-    if (gameRes && gameRes.success && gameRes.data) {
-      const data = gameRes.data
-      settings.javaAutoSelect = data.java_auto_select !== false
-      settings.javaPath = data.java_path || ''
-      settings.memory = data.memory_size || 4096
-      if (data.minecraft_paths?.length) {
-        settings.gamePath = data.minecraft_paths[0]
-      }
-    }
+    
 
     if (downloadRes && downloadRes.success && downloadRes.data) {
       const data = downloadRes.data
@@ -117,7 +106,7 @@ onMounted(() => {
   flex-direction: column;
   height: 100%;
   overflow: hidden;
-  padding: 20px;
+  padding: 0;
 }
 
 .settings-card {
@@ -128,13 +117,13 @@ onMounted(() => {
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);
   overflow: hidden;
-  margin-top: 16px;
+  margin-top: 10px;
 }
 
 .settings-content {
   flex: 1;
   overflow-y: auto;
-  padding: 24px;
+  padding: 12px;
 }
 
 .tab-wrapper {

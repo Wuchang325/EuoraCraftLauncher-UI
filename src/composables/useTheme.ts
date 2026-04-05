@@ -1,7 +1,7 @@
 import { ref, computed, watch, type Ref } from 'vue'
 import type { GlobalTheme, GlobalThemeOverrides } from 'naive-ui'
 import { darkTheme, lightTheme } from 'naive-ui'
-import { getBackgroundConfig, getBackgroundImage, getThemeConfig, updateThemeConfig } from '@/utils/api'
+import { api } from '@/utils/api'
 
 export type ThemeMode = 'light' | 'dark' | 'system'
 
@@ -17,9 +17,9 @@ const BLUR_KEY = 'euoracraft-blur-amount'
 
 // 预设主题色
 export const presetColors = [
-  { name: '天蓝色', value: '#87CEEB' },
-  { name: '樱花粉', value: '#FFB6C1' },
-  { name: '薄荷绿', value: '#98E4D6' },
+  //{ name: '天蓝色', value: '#87CEEB' },
+  //{ name: '樱花粉', value: '#FFB6C1' },
+  //{ name: '薄荷绿', value: '#98E4D6' },
   //{ name: '薰衣草紫', value: '#E6E6FA' },
   { name: '默认蓝', value: '#0078d4' },
   { name: '极客绿', value: '#107c10' },
@@ -144,7 +144,7 @@ function createThemeOverrides(isDark: boolean, primary: string): GlobalThemeOver
 
 // 状态
 const themeMode = ref<ThemeMode>('system')
-const primaryColor = ref('#87CEEB') // 默认天蓝色
+const primaryColor = ref('#0078d4') // 默认蓝色
 const backgroundImage = ref('') // 默认无背景图
 const backgroundImagePath = ref('') // 背景图路径
 const blurAmount = ref(6)
@@ -186,16 +186,17 @@ function updateTheme() {
   
   // 更新 CSS 变量
   document.documentElement.style.setProperty('--color-primary', primaryColor.value)
-  document.documentElement.style.setProperty('--bg-image', backgroundImage.value ? `url(${backgroundImage.value})` : 'none')
+  // Base64 数据 URI 需要加引号，避免特殊字符导致 CSS 解析错误
+  document.documentElement.style.setProperty('--bg-image', backgroundImage.value ? `url("${backgroundImage.value}")` : 'none')
   document.documentElement.style.setProperty('--bg-blur', `${blurAmount.value}px`)
   
-  // 保存到本地存储
+  // 保存到本地存储（背景图只保存路径，不保存 Base64 数据以避免超出配额）
   localStorage.setItem(THEME_KEY, JSON.stringify({
     mode: themeMode.value,
     followSystem: themeMode.value === 'system'
   }))
   localStorage.setItem(COLOR_KEY, primaryColor.value)
-  localStorage.setItem(BG_IMAGE_KEY, backgroundImage.value)
+  localStorage.setItem(BG_IMAGE_KEY, backgroundImagePath.value)  // 保存路径而非 Base64
   localStorage.setItem(BLUR_KEY, blurAmount.value.toString())
 }
 
@@ -215,50 +216,38 @@ function setPrimaryColor(color: string) {
 
 function setBackgroundImage(url: string, path?: string) {
   backgroundImage.value = url
-  if (path !== undefined) {
-    backgroundImagePath.value = path
-  }
+  if (path !== undefined) backgroundImagePath.value = path
   updateTheme()
-  // 同时保存到后端配置
   saveThemeConfig()
 }
 
 function setBlurAmount(amount: number) {
   blurAmount.value = amount
   updateTheme()
-  // 同时保存到后端配置
   saveThemeConfig()
 }
 
-// 保存到后端（防抖）
 let saveTimer: any = null
 async function saveThemeConfig() {
-  // 清除之前的定时器
   if (saveTimer) clearTimeout(saveTimer)
-  
-  // 设置新的防抖定时器（100ms）
   saveTimer = setTimeout(async () => {
-    if (window.pywebview && window.pywebview.api) {
+    if (window.pywebview?.api) {
       try {
-        const themeConfig = {
+        await updateThemeConfig({
           mode: themeMode.value,
           primary_color: primaryColor.value,
           blur_amount: blurAmount.value
-        };
-        
-        await updateThemeConfig(themeConfig);
+        })
       } catch (error) {
-        console.error('保存主题配置失败:', error);
+        console.error('保存主题配置失败:', error)
       }
     }
-    
-    // 同时保存到localStorage作为备份
     localStorage.setItem(THEME_KEY, JSON.stringify({
       mode: themeMode.value,
       followSystem: themeMode.value === 'system'
     }))
     localStorage.setItem(COLOR_KEY, primaryColor.value)
-    localStorage.setItem(BG_IMAGE_KEY, backgroundImage.value)
+    localStorage.setItem(BG_IMAGE_KEY, backgroundImagePath.value)
     localStorage.setItem(BLUR_KEY, blurAmount.value.toString())
   }, 100)
 }
@@ -273,75 +262,44 @@ function toggleTheme() {
 
 export async function initTheme() {
   try {
-    // 尝试从后端API获取主题配置
-    if (window.pywebview && window.pywebview.api) {
-      const config = await getThemeConfig()
+    const savedBgImage = localStorage.getItem(BG_IMAGE_KEY)
+    if (savedBgImage?.startsWith('data:') && savedBgImage.length > 1000) {
+      localStorage.removeItem(BG_IMAGE_KEY)
+    }
+    
+    if (window.pywebview?.api) {
+      const config = await api.getThemeConfig()
+      themeMode.value = config.data?.mode as ThemeMode || 'system'
+      primaryColor.value = config.data?.primary_color || '#87CEEB'
+      blurAmount.value = config.data?.blur_amount || 6
       
-      if (config.success && config.data) {
-        themeMode.value = config.data.mode as ThemeMode || 'system'
-        primaryColor.value = config.data.primary_color || '#87CEEB'
-        blurAmount.value = config.data.blur_amount || 6
-      } else {
-        themeMode.value = 'system'
-        primaryColor.value = '#87CEEB'
-        blurAmount.value = 6
-      }
-      
-      // 从后端配置加载后，需要重新加载背景图片
-      if (window.pywebview && window.pywebview.api) {
-        // 获取背景图配置
-        const bgConfig = await getBackgroundConfig()
-        if (bgConfig.success && bgConfig.data) {
-          // 如果有背景图路径，加载背景图片数据
-          if (bgConfig.data.path) {
-            backgroundImagePath.value = bgConfig.data.path
-            const imgData = await getBackgroundImage()
-            if (imgData.success && imgData.data?.base64) {
-              backgroundImage.value = imgData.data.base64
-            }
-          } else {
-            backgroundImage.value = ''
-            backgroundImagePath.value = ''
-          }
-          // 如果背景配置中有模糊值，覆盖主题配置中的模糊值
-          if (typeof bgConfig.data.blur === 'number') {
-            blurAmount.value = bgConfig.data.blur
-            console.log('从背景配置中读取模糊值:', bgConfig.data.blur)
-          }
+      const bgConfig = await api.getBackgroundConfig()
+      if (bgConfig.success && bgConfig.data?.path) {
+        backgroundImagePath.value = bgConfig.data.path
+        const imgData = await api.getBackgroundImage()
+        if (imgData.success && imgData.data?.base64) {
+          backgroundImage.value = imgData.data.base64
+        }
+        if (typeof bgConfig.data.blur === 'number') {
+          blurAmount.value = bgConfig.data.blur
         }
       }
     } else {
-      // 如果没有后端API，则从localStorage加载（向后兼容）
       const saved = localStorage.getItem(THEME_KEY)
-      if (saved) {
-        const state: ThemeState = JSON.parse(saved)
-        themeMode.value = state.mode
+      if (saved) themeMode.value = (JSON.parse(saved) as ThemeState).mode
+      primaryColor.value = localStorage.getItem(COLOR_KEY) || '#87CEEB'
+      const savedPath = localStorage.getItem(BG_IMAGE_KEY)
+      if (savedPath && !savedPath.startsWith('data:')) {
+        backgroundImagePath.value = savedPath
       }
-      
-      const savedColor = localStorage.getItem(COLOR_KEY)
-      if (savedColor) {
-        primaryColor.value = savedColor
-      } else {
-        primaryColor.value = '#87CEEB' // 默认天蓝色
-      }
-
-      const savedBgImage = localStorage.getItem(BG_IMAGE_KEY)
-      if (savedBgImage) {
-        backgroundImage.value = savedBgImage
-      } else {
-        backgroundImage.value = '' // 默认无背景图
-      }
-
       const savedBlur = localStorage.getItem(BLUR_KEY)
-      if (savedBlur) {
-        blurAmount.value = parseInt(savedBlur)
-      }
+      if (savedBlur) blurAmount.value = parseInt(savedBlur)
     }
   } catch (error) {
     console.error('初始化主题失败:', error)
     themeMode.value = 'system'
     primaryColor.value = '#87CEEB'
-    backgroundImage.value = '' // 默认无背景图
+    backgroundImage.value = ''
     blurAmount.value = 6
   }
   

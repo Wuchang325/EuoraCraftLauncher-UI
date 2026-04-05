@@ -1,32 +1,53 @@
 <template>
-  <aside class="sidebar" :class="{ expanded: isExpanded }">
-    <button class="toggle-btn" @click="toggleSidebar" title="切换侧边栏">
-      <i class="icon icon-menu" />
-    </button>
+  <aside class="sidebar" :class="[attrs.class, { expanded: isExpanded, 'modal-hidden': isFullscreenModalVisible || !agreementAccepted }]">
+    <UiButton 
+      variant="ghost"
+      shape="circle"
+      size="md"
+      icon="icon-menu"
+      :title="t('sidebar.toggle')"
+      @click="toggleSidebar"
+      class="toggle-btn"
+    />
     
     <nav class="sidebar-nav" @mouseleave="handleMouseLeave">
       <div class="active-background" ref="backgroundRef"></div>
       <div class="active-indicator" ref="indicatorRef"></div>
       
-      <router-link 
+      <a
         v-for="(item, index) in menuItems" 
         :key="item.path"
-        :to="item.path"
         class="menu-item"
-        active-class="active"
+        :class="{ active: route.path === item.path || (item.path !== '/' && route.path.startsWith(item.path)) }"
         @mouseenter="handleMouseEnter(index)"
-        @click="handleItemClick"
+        @click.prevent="handleItemClick(item)"
       >
         <i :class="['icon', item.icon]" />
         <span class="text">{{ item.label }}</span>
-      </router-link>
+      </a>
     </nav>
     
     <div class="sidebar-footer">
-      <button class="menu-item" @click="openHelp" title="帮助">
-        <i class="icon icon-help" />
-        <span class="text">帮助</span>
-      </button>
+      <a
+        v-if="isDevMode"
+        class="menu-item"
+        :class="{ active: route.path === '/dev' }"
+        :title="t('sidebar.debugTitle')"
+        @click.prevent="handleItemClick({ path: '/dev' })"
+      >
+        <i class="icon icon-bug" />
+        <span class="text">{{ t('sidebar.debug') }}</span>
+      </a>
+      <UiButton 
+        variant="ghost"
+        size="md"
+        icon="icon-help"
+        :title="t('sidebar.help')"
+        @click="openHelp"
+        class="sidebar-help-btn"
+      >
+        {{ t('sidebar.help') }}
+      </UiButton>
     </div>
   </aside>
   
@@ -34,45 +55,111 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { useMessage } from 'naive-ui'
+import { ref, watch, nextTick, onMounted, computed, inject, useAttrs } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useGlassMessage } from '@/composables/useGlassMessage'
+import { useI18n } from 'vue-i18n'
+import { useFullscreenModal } from '@/composables/useFullscreenModal'
+import UiButton from '@/components/ui/Button.vue'
+import { api } from '@/utils/api'
 import '@/style/components/SideBar.css'
+
+// 禁用自动属性继承，因为组件有多个根元素
+defineOptions({
+  inheritAttrs: false
+})
+
+const attrs = useAttrs()
 
 const isExpanded = ref(false)
 const route = useRoute()
-const message = useMessage()
+const router = useRouter()
+const message = useGlassMessage()
+const { t } = useI18n()
+const fullscreenModal = useFullscreenModal()
+// 使用计算属性包装，确保模板中正确解包
+const isFullscreenModalVisible = computed(() => fullscreenModal.isVisible.value)
+
+// 调试：监听 fullscreenModal 变化（必须在 fullscreenModal 初始化之后）
+watch(() => fullscreenModal.isVisible.value, (val) => {
+  console.log('[SideBar] fullscreenModal.isVisible 变化:', val)
+}, { immediate: true })
 const indicatorRef = ref<HTMLElement | null>(null)
 const backgroundRef = ref<HTMLElement | null>(null)
 
-const menuItems = [
-  { path: '/', label: '游戏', icon: 'icon-game' },
-  { path: '/versions', label: '版本', icon: 'icon-cube' },
-  { path: '/instances', label: '实例管理', icon: 'icon-folder' },
-  { path: '/settings', label: '设置', icon: 'icon-settings' }
-]
+// 注入用户协议状态
+const agreementAccepted = inject('agreementAccepted', computed(() => true))
+
+// 调试模式：由后端配置控制
+const isDevMode = ref(false)
+
+// 从后端获取调试配置
+onMounted(async () => {
+  try {
+    const res = await api.getLauncherConfig()
+    if (res.success && res.data) {
+      isDevMode.value = res.data.debug === true
+    }
+  } catch {
+    isDevMode.value = false
+  }
+})
+
+const menuItems = computed(() => [
+  { path: '/', label: t('sidebar.game'), icon: 'icon-game' },
+  { path: '/versions', label: t('sidebar.versions'), icon: 'icon-cube' },
+  { path: '/instances', label: t('sidebar.instances'), icon: 'icon-folder' },
+  { path: '/settings', label: t('sidebar.settings'), icon: 'icon-settings' }
+])
 
 const toggleSidebar = () => {
   isExpanded.value = !isExpanded.value
 }
 
-const handleItemClick = () => {
+// 同步侧边栏展开状态到 body，供全局消息组件使用
+watch(isExpanded, (val) => {
+  if (val) {
+    document.body.classList.add('sidebar-expanded')
+  } else {
+    document.body.classList.remove('sidebar-expanded')
+  }
+}, { immediate: true })
+
+// 检查是否可以导航
+const canNavigate = () => {
+  if (!agreementAccepted.value) {
+    message.warning(t('agreement.acceptRequired'))
+    return false
+  }
+  return true
 }
 
+const handleItemClick = (item: { path: string }) => {
+  if (!canNavigate()) {
+    return
+  }
+  // 允许导航
+  router.push(item.path)
+}
+
+
 const openHelp = () => {
-  message.info('帮助文档正在编写中...')
+  if (!canNavigate()) {
+    return
+  }
+  message.info(t('sidebar.helpMessage'))
 }
 
 const updateIndicator = (index: number) => {
-  const top = index * 52
+  const top = index * 44
   if (indicatorRef.value) {
-    indicatorRef.value.style.top = `${top + 10}px`
+    indicatorRef.value.style.top = `${top + 8}px`
     indicatorRef.value.style.opacity = '1'
   }
 }
 
 const updateBackground = (index: number) => {
-  const top = index * 52
+  const top = index * 44
   if (backgroundRef.value) {
     backgroundRef.value.style.top = `${top}px`
     backgroundRef.value.style.opacity = '1'
@@ -80,11 +167,11 @@ const updateBackground = (index: number) => {
 }
 
 const getActiveIndex = (path: string) => {
-  let index = menuItems.findIndex(item => item.path === path)
+  let index = menuItems.value.findIndex(item => item.path === path)
   if (index !== -1) return index
   
   if (path !== '/') {
-    index = menuItems.findIndex(item => item.path !== '/' && path.startsWith(item.path))
+    index = menuItems.value.findIndex(item => item.path !== '/' && path.startsWith(item.path))
     if (index !== -1) return index
   }
   

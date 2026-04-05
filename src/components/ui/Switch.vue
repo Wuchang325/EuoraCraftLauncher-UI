@@ -51,7 +51,7 @@ const handleChange = (event: Event) => {
   width: 36px;
   height: 20px;
   background-color: var(--text-disabled);
-  transition: .4s;
+  transition: all var(--duration-normal) var(--ease-standard);
   border-radius: 20px;
 }
 
@@ -63,7 +63,7 @@ const handleChange = (event: Event) => {
   left: 2px;
   bottom: 2px;
   background-color: white;
-  transition: .4s;
+  transition: all var(--duration-normal) var(--ease-standard);
   border-radius: 50%;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
