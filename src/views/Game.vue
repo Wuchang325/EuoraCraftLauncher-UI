@@ -310,21 +310,19 @@ function formatUuid(uuid: string): string {
 }
 
 // MCCAG 风格头像获取 - 使用无背景、仅头部的渲染方式
-// 优先使用 Crafatar 的渲染服务，配合参数获取类似 MCCAG 的效果
 function getAvatarUrl(uuid?: string, size: number = 64): string {
-  if (!uuid) return `https://crafatar.com/renders/head/8667ba71b85a4004af54457a9734eed7?scale=4&overlay=true`
+  if (!uuid) return `https://crafatar.com/avatars/8667ba71b85a4004af54457a9734eed7?size=${size}&overlay=true`
   const cleanUuid = formatUuid(uuid)
-  // 使用 Crafatar render 服务获取 3D 头部渲染（无背景效果）
-  // scale=4 提供高清渲染，overlay=true 显示外层皮肤
-  return `https://crafatar.com/renders/head/${cleanUuid}?scale=4&overlay=true&${size}`
+  // 使用 Crafatar avatars 端点获取 2D 头像（支持透明背景）
+  // 默认返回 Steve 皮肤如果找不到玩家
+  return `https://crafatar.com/avatars/${cleanUuid}?size=${size}&overlay=true&default=Steve`
 }
 
-// 备用：使用 MCCAG 公共 API（如果可用）
-function getMCCAGAvatarUrl(username?: string, type: 'head' | 'half' | 'full' = 'head'): string {
+// MCCAG API 头像（卡通风格，仅头部无背景）
+function getMCCAGAvatarUrl(username?: string): string {
   if (!username) return 'https://mccag.oyne.cn/api/generate/minimal/mojang/Steve?type=head'
-  // 使用 MCCAG API 生成无背景头像
-  // minimal 模式，mojang 皮肤源，head 裁剪
-  return `https://mccag.oyne.cn/api/generate/minimal/mojang/${username}?type=${type}`
+  // 使用 MCCAG API 生成简约风格头像（无背景）
+  return `https://mccag.oyne.cn/api/generate/minimal/mojang/${username}?type=head`
 }
 
 // 当前账户头像 URL
