@@ -29,10 +29,10 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const iframeRef = ref<HTMLIFrameElement | null>(null)
-const isInteracting = ref(false)
 
+// iframe 始终不接收鼠标事件，只通过 postMessage 接收转发的事件
 const iframeStyle = computed(() => ({
-  pointerEvents: isInteracting.value ? 'auto' : 'none'
+  pointerEvents: 'none' as const
 }))
 
 const updateEffect = () => {
@@ -65,14 +65,12 @@ const setupEventForwarding = () => {
   }
   
   const onMouseDown = (e: MouseEvent) => {
-    isInteracting.value = true
     forwardEvent(e, 'mousedown')
   }
   const onMouseMove = (e: MouseEvent) => {
     forwardEvent(e, 'mousemove')
   }
   const onMouseUp = (e: MouseEvent) => {
-    isInteracting.value = false
     forwardEvent(e, 'mouseup')
   }
   
