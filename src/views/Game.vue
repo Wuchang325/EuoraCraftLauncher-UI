@@ -705,7 +705,7 @@ onBeforeUnmount(() => {
   width: 48px;
   height: 48px;
   border-radius: 0;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -731,10 +731,6 @@ onBeforeUnmount(() => {
   image-rendering: -webkit-crisp-edges;
   image-rendering: crisp-edges;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
-}
-
-.acc-avatar[data-type="offline"] {
-  background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%);
 }
 
 .acc-avatar span {
