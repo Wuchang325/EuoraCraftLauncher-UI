@@ -49,8 +49,10 @@
 /* ==================== CSS 变量系统 ==================== */
 :root {
   /* --- 字体系统 --- */
-  --font-display: 'MiSans VF', 'Maple Mono', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  --font-body: 'MiSans VF', 'Maple Mono', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  /* 标题字体：MiSans VF 粗体，现代感强 */
+  --font-display: 'MiSans VF', 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  /* 正文字体：Inter 英文优雅 + MiSans VF 中文清晰 */
+  --font-body: 'Inter', 'MiSans VF', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   --font-mono: 'Maple Mono', 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
   --font-icon: 'SegoeFluent';
   
@@ -179,7 +181,7 @@ html, body {
   overflow: hidden;
   font-family: var(--font-body);
   font-size: 15px;
-  font-weight: 400;
+  font-weight: 450;
   line-height: 1.6;
   color: var(--text-primary);
   background-color: var(--bg-app);
@@ -191,11 +193,12 @@ html, body {
   transition: background-color 0.3s var(--ease-normal), color 0.3s var(--ease-normal);
 }
 
-/* 标题字体优化 */
+/* 标题字体优化 - MiSans VF 粗体 */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
+  font-feature-settings: "tnum";
 }
 
 /* 代码块和等宽文本 */
