@@ -620,36 +620,20 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.account-card {
-  margin-bottom: 12px;
-}
-
 .account-info {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .account-info .user-details {
   flex: 1;
 }
 
-.version-card {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.home-right {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-/* ==================== 账户管理弹窗内容 ==================== */
+/* ==================== 账户管理弹窗内容 - 设置页风格 ==================== */
 .account-manager {
   display: flex;
-  gap: 20px;
+  gap: 16px;
   padding: 16px;
   height: 100%;
 }
@@ -663,13 +647,13 @@ onBeforeUnmount(() => {
 }
 
 .section-title {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
   margin: 0 0 12px 0;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .section-title .icon {
@@ -689,14 +673,14 @@ onBeforeUnmount(() => {
 .account-items {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .account-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px;
+  padding: 10px 12px;
   background: var(--bg-app);
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
@@ -816,9 +800,9 @@ onBeforeUnmount(() => {
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* 右侧：添加账户 */
+/* 右侧：添加账户 - 设置页风格 */
 .account-add-section {
-  width: 300px;
+  width: 280px;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -828,19 +812,19 @@ onBeforeUnmount(() => {
   background: var(--bg-surface);
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);
-  padding: 16px;
+  padding: 12px;
 }
 
 .add-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .form-label {
