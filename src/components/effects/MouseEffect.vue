@@ -5,11 +5,12 @@
     src="/mouse-effect.html"
     class="mouse-effect-iframe"
     frameborder="0"
+    :style="iframeStyle"
   />
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 
 interface Props {
   enabled: boolean
@@ -28,6 +29,11 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const iframeRef = ref<HTMLIFrameElement | null>(null)
+const isInteracting = ref(false)
+
+const iframeStyle = computed(() => ({
+  pointerEvents: isInteracting.value ? 'auto' : 'none'
+}))
 
 const updateEffect = () => {
   if (!iframeRef.value?.contentWindow) return
@@ -41,9 +47,57 @@ const updateEffect = () => {
   }
 }
 
+// 监听父窗口的鼠标事件并转发给 iframe
+const setupEventForwarding = () => {
+  const forwardEvent = (e: MouseEvent, type: string) => {
+    if (!iframeRef.value) return
+    const iframe = iframeRef.value
+    const rect = iframe.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    
+    iframe.contentWindow?.postMessage({
+      type: 'mouse',
+      eventType: type,
+      x,
+      y
+    }, '*')
+  }
+  
+  const onMouseDown = (e: MouseEvent) => {
+    isInteracting.value = true
+    forwardEvent(e, 'mousedown')
+  }
+  const onMouseMove = (e: MouseEvent) => {
+    forwardEvent(e, 'mousemove')
+  }
+  const onMouseUp = (e: MouseEvent) => {
+    isInteracting.value = false
+    forwardEvent(e, 'mouseup')
+  }
+  
+  window.addEventListener('mousedown', onMouseDown)
+  window.addEventListener('mousemove', onMouseMove)
+  window.addEventListener('mouseup', onMouseUp)
+  
+  return () => {
+    window.removeEventListener('mousedown', onMouseDown)
+    window.removeEventListener('mousemove', onMouseMove)
+    window.removeEventListener('mouseup', onMouseUp)
+  }
+}
+
+let cleanup: (() => void) | null = null
+
 watch(() => props.enabled, (val) => {
   if (val) {
     setTimeout(updateEffect, 100)
+    if (!cleanup) cleanup = setupEventForwarding()
+  } else {
+    if (cleanup) {
+      cleanup()
+      cleanup = null
+    }
   }
 })
 
@@ -54,6 +108,7 @@ watch(() => [props.color, props.scale, props.opacity, props.speed], () => {
 onMounted(() => {
   if (props.enabled) {
     setTimeout(updateEffect, 100)
+    cleanup = setupEventForwarding()
   }
 })
 </script>
@@ -65,8 +120,8 @@ onMounted(() => {
   left: 0;
   width: 100vw;
   height: 100vh;
-  pointer-events: none;
   z-index: 9999;
   background: transparent;
+  border: none;
 }
 </style>
