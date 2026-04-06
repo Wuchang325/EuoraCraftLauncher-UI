@@ -22,28 +22,24 @@ export function getAvatarUrlByUuid(
   uuid: string | undefined,
   options: SkinRenderOptions = {}
 ): string {
-  const { size = 64, defaultSkin = 'Steve' } = options
-  
-  if (!uuid) {
-    // 离线账户使用固定尺寸的 Steve 头像
-    return `https://minotar.net/avatar/Steve/${size}.png`
-  }
-  
-  const cleanUuid = uuid.replace(/-/g, '')
-  return `https://crafatar.com/avatars/${cleanUuid}?size=${size}&overlay=true&default=${defaultSkin}`
+  // 所有账户统一使用 Crafatar 3D 头部渲染（无背景、无留白）
+  const cleanUuid = uuid?.replace(/-/g, '') || '8667ba71b85a4004af54457a9734eed7'
+  // scale=4 提供高清渲染，renders/head 是 3D 头部渲染，没有边距
+  return `https://crafatar.com/renders/head/${cleanUuid}?scale=4&overlay=true&default=Steve`
 }
 
 /**
- * 从用户名获取 MCCAG 风格头像
+ * 从用户名获取 MCCAG 风格头像（使用 Crafatar 3D 渲染）
+ * 通过获取 UUID 后使用渲染端点获取无背景头部
  */
 export function getMCCAGAvatarUrl(
   username: string | undefined,
   options: { type?: 'head' | 'half' | 'full' } = {}
 ): string {
-  const { type = 'head' } = options
+  // 使用 Crafatar render 端点直接渲染头部（无背景）
+  // 这种渲染方式会紧密裁剪头部，没有多余边距
   const name = username || 'Steve'
-  // 使用 MCCAG API 生成无背景简约风格头像
-  return `https://mccag.oyne.cn/api/generate/minimal/mojang/${name}?type=${type}`
+  return `https://crafatar.com/renders/head/${name}?scale=4&overlay=true&default=Steve`
 }
 
 /**

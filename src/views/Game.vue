@@ -327,12 +327,12 @@ function getAccountAvatarUrl(account: { uuid?: string; alias?: string; type?: st
   return getAvatarUrlByUuid(account.uuid, { size: 64, showHat: true })
 }
 
-// 头像加载失败时使用 minotar 后备
+// 头像加载失败时使用 crafatar 后备
 function handleAvatarError(event: Event, account: { uuid?: string; alias?: string; type?: string }) {
   const img = event.target as HTMLImageElement
   const name = account.alias || 'Steve'
-  // 使用 minotar 作为后备，确保尺寸一致
-  img.src = `https://minotar.net/avatar/${name}/64.png`
+  // 使用 crafatar renders 作为后备，确保无背景且尺寸一致
+  img.src = `https://crafatar.com/renders/head/${name}?scale=4&overlay=true&default=Steve`
 }
 
 // 账户类型标签
@@ -716,8 +716,8 @@ onBeforeUnmount(() => {
 }
 
 .acc-avatar {
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
   border-radius: 0;
   background: transparent;
   display: flex;
