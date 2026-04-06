@@ -304,41 +304,21 @@ const deleteConfirmMessage = computed(() => {
   return t('game.deleteConfirm', { name: accountToDelete.value.alias })
 })
 
-// 将 UUID 格式化为无连字符格式
-function formatUuid(uuid: string): string {
-  return uuid?.replace(/-/g, '') || ''
-}
-
-// MCCAG 风格头像获取 - 使用无背景、仅头部的渲染方式
-function getAvatarUrl(uuid?: string, size: number = 64): string {
-  if (!uuid) return `https://crafatar.com/avatars/8667ba71b85a4004af54457a9734eed7?size=${size}&overlay=true`
-  const cleanUuid = formatUuid(uuid)
-  // 使用 Crafatar avatars 端点获取 2D 头像（支持透明背景）
-  // 默认返回 Steve 皮肤如果找不到玩家
-  return `https://crafatar.com/avatars/${cleanUuid}?size=${size}&overlay=true&default=Steve`
-}
-
-// MCCAG API 头像（卡通风格，仅头部无背景）
-function getMCCAGAvatarUrl(username?: string): string {
-  if (!username) return 'https://mccag.oyne.cn/api/generate/minimal/mojang/Steve?type=head'
-  // 使用 MCCAG API 生成简约风格头像（无背景）
-  return `https://mccag.oyne.cn/api/generate/minimal/mojang/${username}?type=head`
-}
+import { getAvatarUrlByUuid, getMCCAGAvatarUrl } from '@/utils/skinRenderer'
 
 // 当前账户头像 URL
 const currentAccountAvatarUrl = computed(() => {
-  return getAvatarUrl(currentAccount.value?.uuid)
+  return getAvatarUrlByUuid(currentAccount.value?.uuid, { size: 64, showHat: true })
 })
 
-// 获取账户头像 URL
-// 获取账户头像 - MCCAG 风格（无背景、仅头部）
-function getAccountAvatarUrl(account: { uuid?: string; alias?: string }): string {
-  // 优先使用 Crafatar 3D 渲染服务获取无背景头像
-  if (account.uuid) {
-    return getAvatarUrl(account.uuid, 64)
+// 获取账户头像 URL - MCCAG 风格（无背景、仅头部带帽子）
+function getAccountAvatarUrl(account: { uuid?: string; alias?: string; type?: string }): string {
+  // 微软账户使用 MCCAG API 获取更美观的渲染
+  if (account.type === 'microsoft' && account.alias) {
+    return getMCCAGAvatarUrl(account.alias, { type: 'head' })
   }
-  // 后备：使用 Steve 默认头像
-  return `https://crafatar.com/renders/head/8667ba71b85a4004af54457a9734eed7?scale=4&overlay=true`
+  // 离线账户或其他使用 Crafatar
+  return getAvatarUrlByUuid(account.uuid, { size: 64, showHat: true })
 }
 
 // 账户类型标签
@@ -734,14 +714,22 @@ onBeforeUnmount(() => {
   color: white;
   flex-shrink: 0;
   overflow: hidden;
+  /* 像素化渲染 */
   image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
   image-rendering: -webkit-crisp-edges;
+  image-rendering: crisp-edges;
+  -ms-interpolation-mode: nearest-neighbor;
 }
 
 .acc-avatar img {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: crisp-edges;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
 }
 

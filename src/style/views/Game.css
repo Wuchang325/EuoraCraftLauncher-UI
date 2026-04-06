@@ -152,15 +152,19 @@
 }
 
 .avatar {
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   border-radius: 0;
   background: transparent;
   object-fit: contain;
   display: block;
   flex-shrink: 0;
+  /* 像素化渲染，确保 8x8 像素清晰 */
   image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
   image-rendering: -webkit-crisp-edges;
+  image-rendering: crisp-edges;
+  -ms-interpolation-mode: nearest-neighbor;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
 }
 
