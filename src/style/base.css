@@ -1,4 +1,6 @@
 /* ==================== 字体定义 ==================== */
+
+/* 图标字体 */
 @font-face {
   font-family: "SegoeFluent";
   src: url("/fonts/SegoeFluentIcons.ttf") format("truetype");
@@ -7,12 +9,21 @@
   font-display: block;
 }
 
+/* Maple Mono - 可变字体 (Variable Font) */
+@font-face {
+  font-family: "Maple Mono";
+  src: url("/fonts/MapleMono[wght].ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ==================== CSS 变量系统 ==================== */
 :root {
   /* --- 字体系统 --- */
   --font-display: 'Inter', 'LXGW WenKai', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   --font-body: 'LXGW WenKai', 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
+  --font-mono: 'Maple Mono', 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
   --font-icon: 'SegoeFluent';
   
   /* --- 调色板 (Light Mode) --- */
