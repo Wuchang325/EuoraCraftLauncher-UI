@@ -40,8 +40,8 @@
 /* ==================== CSS 变量系统 ==================== */
 :root {
   /* --- 字体系统 --- */
-  --font-display: 'LXGWWenKai', 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  --font-body: 'LXGWWenKai', 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-display: 'Maple Mono', 'LXGWWenKai', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-body: 'Maple Mono', 'LXGWWenKai', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   --font-mono: 'Maple Mono', 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
   --font-icon: 'SegoeFluent';
   
