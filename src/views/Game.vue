@@ -710,7 +710,7 @@ onBeforeUnmount(() => {
 .acc-avatar {
   width: 44px;
   height: 44px;
-  border-radius: var(--radius-md);
+  border-radius: 0;
   background: linear-gradient(135deg, var(--color-primary) 0%, #8b5cf6 100%);
   display: flex;
   align-items: center;
