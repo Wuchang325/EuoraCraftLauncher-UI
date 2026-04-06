@@ -12,6 +12,15 @@
             <!-- 背景层 -->
             <div class="app-background"></div>
             
+            <!-- 鼠标点击效果 -->
+            <MouseEffect 
+              :enabled="mouseEffectEnabled" 
+              :color="mouseEffectColor"
+              :scale="mouseEffectScale"
+              :opacity="mouseEffectOpacity"
+              :speed="mouseEffectSpeed"
+            />
+            
             <!-- 主布局 -->
             <div class="app-layout">
               <!-- 顶部栏 - 始终可交互 -->
@@ -108,6 +117,7 @@ import TitleBar from '@/components/layout/TitleBar.vue'
 import SideBar from '@/components/layout/SideBar.vue'
 import GlassMessage from '@/components/ui/GlassMessage.vue'
 import ContentModal from '@/components/modals/ContentModal.vue'
+import MouseEffect from '@/components/effects/MouseEffect.vue'
 import { useTheme } from '@/composables/useTheme'
 import { usePageTransition } from '@/composables/useAnimation'
 import { setMessageRef } from '@/composables/useGlassMessage'
@@ -120,7 +130,40 @@ const { locale, t } = useI18n()
 const { isAccepted: isAgreementAccepted, isLoading: agreementLoading, agreementUrl } = useUserAgreement()
 const fullscreenModal = useFullscreenModal()
 
+// 鼠标点击效果配置
+const mouseEffectEnabled = ref(false)
+const mouseEffectColor = ref('45,175,255')
+const mouseEffectScale = ref(1.5)
+const mouseEffectOpacity = ref(1.0)
+const mouseEffectSpeed = ref(1.0)
 
+// 从 localStorage 加载鼠标效果配置
+const loadMouseEffectConfig = () => {
+  try {
+    const saved = localStorage.getItem('mouseEffect')
+    if (saved) {
+      const config = JSON.parse(saved)
+      mouseEffectEnabled.value = config.enabled ?? false
+      mouseEffectColor.value = config.color ?? '45,175,255'
+      mouseEffectScale.value = config.scale ?? 1.5
+      mouseEffectOpacity.value = config.opacity ?? 1.0
+      mouseEffectSpeed.value = config.speed ?? 1.0
+    }
+  } catch (e) {
+    console.error('加载鼠标效果配置失败:', e)
+  }
+}
+
+// 监听设置页面的事件
+const setupMouseEffectListeners = () => {
+  window.addEventListener('mouseEffectChange', (e: any) => {
+    mouseEffectEnabled.value = e.detail.enabled
+    loadMouseEffectConfig()
+  })
+  window.addEventListener('mouseEffectUpdate', (e: any) => {
+    loadMouseEffectConfig()
+  })
+}
 
 // 根据当前语言选择 Naive UI 的 locale
 const naiveLocale = computed(() => {
@@ -161,6 +204,10 @@ const handleAgreementReject = () => {
 
 onMounted(async () => {
   if (messageRef.value) setMessageRef(messageRef.value)
+  
+  // 加载鼠标效果配置
+  loadMouseEffectConfig()
+  setupMouseEffectListeners()
   
   const init = async () => {
     fullscreenModal.reset()

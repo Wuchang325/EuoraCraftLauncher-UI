@@ -153,6 +153,79 @@
           </div>
         </div>
       </div>
+
+      <!-- 鼠标点击效果 -->
+      <div class="setting-item">
+        <div class="setting-info">
+          <div class="setting-label">鼠标点击效果</div>
+          <div class="setting-desc">启用鼠标拖尾火花特效</div>
+        </div>
+        <div class="setting-control">
+          <label class="switch">
+            <input 
+              type="checkbox" 
+              :checked="mouseEffectEnabled"
+              @change="toggleMouseEffect"
+            />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div v-if="mouseEffectEnabled" class="setting-item">
+        <div class="setting-info">
+          <div class="setting-label">效果颜色</div>
+          <div class="setting-desc">RGB 颜色值 (例如: 45,175,255)</div>
+        </div>
+        <div class="setting-control">
+          <UiInput 
+            v-model="mouseEffectColor"
+            @update:model-value="updateMouseEffectColor"
+            placeholder="45,175,255"
+            style="width: 140px"
+          />
+        </div>
+      </div>
+
+      <div v-if="mouseEffectEnabled" class="setting-item">
+        <div class="setting-info">
+          <div class="setting-label">效果大小</div>
+          <div class="setting-desc">调整火花大小</div>
+        </div>
+        <div class="setting-control">
+          <div class="slider-container">
+            <input 
+              type="range" 
+              v-model.number="mouseEffectScale"
+              min="0.5" 
+              max="3" 
+              step="0.1"
+              @change="updateMouseEffectSettings"
+            />
+            <span class="slider-value">{{ mouseEffectScale.toFixed(1) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="mouseEffectEnabled" class="setting-item">
+        <div class="setting-info">
+          <div class="setting-label">不透明度</div>
+          <div class="setting-desc">调整效果透明度</div>
+        </div>
+        <div class="setting-control">
+          <div class="slider-container">
+            <input 
+              type="range" 
+              v-model.number="mouseEffectOpacity"
+              min="0.1" 
+              max="1" 
+              step="0.1"
+              @change="updateMouseEffectSettings"
+            />
+            <span class="slider-value">{{ Math.round(mouseEffectOpacity * 100) }}%</span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="settings-group">
@@ -270,6 +343,66 @@ const selectedDownloadSource = computed(() =>
 const selectedLanguage = computed(() =>
   supportedLocales.find(l => l.code === currentLocale.value)
 )
+
+// 鼠标点击效果配置
+const mouseEffectEnabled = ref(false)
+const mouseEffectColor = ref('45,175,255')
+const mouseEffectScale = ref(1.5)
+const mouseEffectOpacity = ref(1.0)
+const mouseEffectSpeed = ref(1.0)
+
+// 从 localStorage 加载配置
+const loadMouseEffectConfig = () => {
+  try {
+    const saved = localStorage.getItem('mouseEffect')
+    if (saved) {
+      const config = JSON.parse(saved)
+      mouseEffectEnabled.value = config.enabled ?? false
+      mouseEffectColor.value = config.color ?? '45,175,255'
+      mouseEffectScale.value = config.scale ?? 1.5
+      mouseEffectOpacity.value = config.opacity ?? 1.0
+      mouseEffectSpeed.value = config.speed ?? 1.0
+    }
+  } catch (e) {
+    console.error('加载鼠标效果配置失败:', e)
+  }
+}
+
+// 保存配置到 localStorage
+const saveMouseEffectConfig = () => {
+  const config = {
+    enabled: mouseEffectEnabled.value,
+    color: mouseEffectColor.value,
+    scale: mouseEffectScale.value,
+    opacity: mouseEffectOpacity.value,
+    speed: mouseEffectSpeed.value
+  }
+  localStorage.setItem('mouseEffect', JSON.stringify(config))
+}
+
+const toggleMouseEffect = () => {
+  mouseEffectEnabled.value = !mouseEffectEnabled.value
+  saveMouseEffectConfig()
+  // 触发自定义事件通知 App.vue 更新
+  window.dispatchEvent(new CustomEvent('mouseEffectChange', { detail: { enabled: mouseEffectEnabled.value } }))
+}
+
+const updateMouseEffectColor = (value: string) => {
+  mouseEffectColor.value = value
+  saveMouseEffectConfig()
+  window.dispatchEvent(new CustomEvent('mouseEffectUpdate', { detail: { color: value } }))
+}
+
+const updateMouseEffectSettings = () => {
+  saveMouseEffectConfig()
+  window.dispatchEvent(new CustomEvent('mouseEffectUpdate', { 
+    detail: { 
+      scale: mouseEffectScale.value,
+      opacity: mouseEffectOpacity.value,
+      speed: mouseEffectSpeed.value
+    } 
+  }))
+}
 
 const toggleOpen = () => {
   isOpen.value = !isOpen.value
@@ -428,6 +561,7 @@ const handleClickOutside = (e: MouseEvent) => {
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
+  loadMouseEffectConfig()
 })
 
 onUnmounted(() => {

@@ -43,8 +43,11 @@ const updateIndicator = (index: number) => {
   if (!indicatorRef.value || !tabRefs.value[index]) return
   
   const tab = tabRefs.value[index]
-  indicatorRef.value.style.left = `${tab.offsetLeft}px`
-  indicatorRef.value.style.width = `${tab.offsetWidth}px`
+  // 指示器宽度为 tab 宽度的 90%，居中显示
+  const indicatorWidth = tab.offsetWidth * 0.9
+  const indicatorLeft = tab.offsetLeft + (tab.offsetWidth - indicatorWidth) / 2
+  indicatorRef.value.style.left = `${indicatorLeft}px`
+  indicatorRef.value.style.width = `${indicatorWidth}px`
   indicatorRef.value.style.opacity = '1'
 }
 

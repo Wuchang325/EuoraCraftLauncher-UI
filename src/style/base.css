@@ -1,5 +1,14 @@
 /* ==================== 字体定义 ==================== */
 
+/* MiSans VF - 小米可变字体 */
+@font-face {
+  font-family: "MiSans VF";
+  src: url("/fonts/MiSansVF.ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* LXGW WenKai 霞鹜文楷 - 本地备用定义 */
 @font-face {
   font-family: 'LXGWWenKai';
@@ -40,8 +49,8 @@
 /* ==================== CSS 变量系统 ==================== */
 :root {
   /* --- 字体系统 --- */
-  --font-display: 'Maple Mono', 'LXGWWenKai', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  --font-body: 'Maple Mono', 'LXGWWenKai', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-display: 'MiSans VF', 'Maple Mono', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-body: 'MiSans VF', 'Maple Mono', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   --font-mono: 'Maple Mono', 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
   --font-icon: 'SegoeFluent';
   
@@ -170,7 +179,7 @@ html, body {
   overflow: hidden;
   font-family: var(--font-body);
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 1.6;
   color: var(--text-primary);
   background-color: var(--bg-app);

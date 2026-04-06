@@ -114,7 +114,7 @@
                   <UiButton 
                     variant="ghost" 
                     size="sm"
-                    icon="icon-trash"
+                    icon="icon-delete"
                     @click="removeAccount(account.id, account.alias)"
                   />
                 </div>
@@ -237,6 +237,7 @@
       v-model:visible="showDeleteConfirmModal"
       type="confirm"
       :title="t('common.confirm')"
+      show-backdrop
     >
       <p>{{ deleteConfirmMessage }}</p>
       
