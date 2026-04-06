@@ -25,7 +25,8 @@ export function getAvatarUrlByUuid(
   const { size = 64, defaultSkin = 'Steve' } = options
   
   if (!uuid) {
-    return `https://crafatar.com/avatars/8667ba71b85a4004af54457a9734eed7?size=${size}&overlay=true&default=${defaultSkin}`
+    // 离线账户使用固定尺寸的 Steve 头像
+    return `https://minotar.net/avatar/Steve/${size}.png`
   }
   
   const cleanUuid = uuid.replace(/-/g, '')

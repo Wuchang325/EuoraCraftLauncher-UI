@@ -327,11 +327,12 @@ function getAccountAvatarUrl(account: { uuid?: string; alias?: string; type?: st
   return getAvatarUrlByUuid(account.uuid, { size: 64, showHat: true })
 }
 
-// 头像加载失败时使用默认头像
+// 头像加载失败时使用 minotar 后备
 function handleAvatarError(event: Event, account: { uuid?: string; alias?: string; type?: string }) {
   const img = event.target as HTMLImageElement
-  // 使用 minotar 作为后备
-  img.src = `https://minotar.net/avatar/${account.alias || 'Steve'}/64.png`
+  const name = account.alias || 'Steve'
+  // 使用 minotar 作为后备，确保尺寸一致
+  img.src = `https://minotar.net/avatar/${name}/64.png`
 }
 
 // 账户类型标签
