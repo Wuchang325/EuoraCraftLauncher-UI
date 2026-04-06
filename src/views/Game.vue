@@ -702,8 +702,8 @@ onBeforeUnmount(() => {
 }
 
 .acc-avatar {
-  width: 56px;
-  height: 56px;
+  width: 72px;
+  height: 72px;
   border-radius: 0;
   background: transparent;
   display: flex;
@@ -730,7 +730,7 @@ onBeforeUnmount(() => {
   image-rendering: -moz-crisp-edges;
   image-rendering: -webkit-crisp-edges;
   image-rendering: crisp-edges;
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
+  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.25));
 }
 
 .acc-avatar span {
