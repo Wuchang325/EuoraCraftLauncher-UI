@@ -150,8 +150,8 @@ html, body {
   width: 100%;
   overflow: hidden;
   font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 450;
+  font-size: 15px;
+  font-weight: 500;
   line-height: 1.6;
   color: var(--text-primary);
   background-color: var(--bg-app);
