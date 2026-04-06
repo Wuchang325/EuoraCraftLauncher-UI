@@ -91,7 +91,13 @@
                 :key="account.id"
                 :class="['account-item', { active: account.isCurrent }]"
               >
-                <img class="acc-avatar" :src="getAccountAvatarUrl(account)" :data-type="account.type" alt="avatar" />
+                <img 
+                  class="acc-avatar" 
+                  :src="getAccountAvatarUrl(account)" 
+                  :data-type="account.type" 
+                  alt="avatar"
+                  @error="handleAvatarError($event, account)"
+                />
                 <div class="acc-info">
                   <div class="acc-name">{{ account.alias }}</div>
                   <div class="acc-type">
@@ -319,6 +325,13 @@ function getAccountAvatarUrl(account: { uuid?: string; alias?: string; type?: st
   }
   // 离线账户或其他使用 Crafatar
   return getAvatarUrlByUuid(account.uuid, { size: 64, showHat: true })
+}
+
+// 头像加载失败时使用默认头像
+function handleAvatarError(event: Event, account: { uuid?: string; alias?: string; type?: string }) {
+  const img = event.target as HTMLImageElement
+  // 使用 minotar 作为后备
+  img.src = `https://minotar.net/avatar/${account.alias || 'Steve'}/64.png`
 }
 
 // 账户类型标签
@@ -702,8 +715,8 @@ onBeforeUnmount(() => {
 }
 
 .acc-avatar {
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
   border-radius: 0;
   background: transparent;
   display: flex;
