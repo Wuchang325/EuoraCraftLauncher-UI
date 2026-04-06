@@ -309,12 +309,22 @@ function formatUuid(uuid: string): string {
   return uuid?.replace(/-/g, '') || ''
 }
 
-// 使用多个备选源，按优先级尝试
-function getAvatarUrl(uuid?: string): string {
-  if (!uuid) return 'https://minotar.net/avatar/Steve/64.png'
+// MCCAG 风格头像获取 - 使用无背景、仅头部的渲染方式
+// 优先使用 Crafatar 的渲染服务，配合参数获取类似 MCCAG 的效果
+function getAvatarUrl(uuid?: string, size: number = 64): string {
+  if (!uuid) return `https://crafatar.com/renders/head/8667ba71b85a4004af54457a9734eed7?scale=4&overlay=true`
   const cleanUuid = formatUuid(uuid)
-  // 使用 minotar 作为主要源，crafatar 作为后备
-  return `https://minotar.net/avatar/${cleanUuid}/64.png`
+  // 使用 Crafatar render 服务获取 3D 头部渲染（无背景效果）
+  // scale=4 提供高清渲染，overlay=true 显示外层皮肤
+  return `https://crafatar.com/renders/head/${cleanUuid}?scale=4&overlay=true&${size}`
+}
+
+// 备用：使用 MCCAG 公共 API（如果可用）
+function getMCCAGAvatarUrl(username?: string, type: 'head' | 'half' | 'full' = 'head'): string {
+  if (!username) return 'https://mccag.oyne.cn/api/generate/minimal/mojang/Steve?type=head'
+  // 使用 MCCAG API 生成无背景头像
+  // minimal 模式，mojang 皮肤源，head 裁剪
+  return `https://mccag.oyne.cn/api/generate/minimal/mojang/${username}?type=${type}`
 }
 
 // 当前账户头像 URL
@@ -323,8 +333,14 @@ const currentAccountAvatarUrl = computed(() => {
 })
 
 // 获取账户头像 URL
-function getAccountAvatarUrl(account: { uuid?: string }): string {
-  return getAvatarUrl(account.uuid)
+// 获取账户头像 - MCCAG 风格（无背景、仅头部）
+function getAccountAvatarUrl(account: { uuid?: string; alias?: string }): string {
+  // 优先使用 Crafatar 3D 渲染服务获取无背景头像
+  if (account.uuid) {
+    return getAvatarUrl(account.uuid, 64)
+  }
+  // 后备：使用 Steve 默认头像
+  return `https://crafatar.com/renders/head/8667ba71b85a4004af54457a9734eed7?scale=4&overlay=true`
 }
 
 // 账户类型标签
@@ -708,10 +724,10 @@ onBeforeUnmount(() => {
 }
 
 .acc-avatar {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: 0;
-  background: linear-gradient(135deg, var(--color-primary) 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -720,6 +736,15 @@ onBeforeUnmount(() => {
   color: white;
   flex-shrink: 0;
   overflow: hidden;
+  image-rendering: pixelated;
+  image-rendering: -webkit-crisp-edges;
+}
+
+.acc-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
 }
 
 .acc-avatar[data-type="offline"] {

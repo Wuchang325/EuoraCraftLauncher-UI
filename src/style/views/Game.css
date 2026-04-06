@@ -152,13 +152,16 @@
 }
 
 .avatar {
-  width: 44px;
-  height: 44px;
+  width: 56px;
+  height: 56px;
   border-radius: 0;
-  background: var(--color-primary);
-  object-fit: cover;
+  background: transparent;
+  object-fit: contain;
   display: block;
   flex-shrink: 0;
+  image-rendering: pixelated;
+  image-rendering: -webkit-crisp-edges;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
 }
 
 .user-details {
