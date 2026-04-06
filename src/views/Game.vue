@@ -739,7 +739,7 @@ onBeforeUnmount(() => {
 .acc-avatar img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: -webkit-crisp-edges;
