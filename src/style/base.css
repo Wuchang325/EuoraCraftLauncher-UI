@@ -9,6 +9,12 @@
 
 /* ==================== CSS 变量系统 ==================== */
 :root {
+  /* --- 字体系统 --- */
+  --font-display: 'Inter', 'LXGW WenKai', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-body: 'LXGW WenKai', 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
+  --font-icon: 'SegoeFluent';
+  
   /* --- 调色板 (Light Mode) --- */
   --color-primary: #3b82f6;
   --color-primary-hover: #2563eb;
@@ -132,20 +138,46 @@ html, body {
   height: 100%;
   width: 100%;
   overflow: hidden;
-  font-family: "Inter", "Segoe UI", "Microsoft YaHei", sans-serif;
+  font-family: var(--font-body);
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.6;
   color: var(--text-primary);
   background-color: var(--bg-app);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   -webkit-user-select: none;
   user-select: none;
   transition: background-color 0.3s var(--ease-normal), color 0.3s var(--ease-normal);
 }
 
+/* 标题字体优化 */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* 代码块和等宽文本 */
+code, pre, kbd, samp, .font-mono {
+  font-family: var(--font-mono);
+  font-size: 0.925em;
+}
+
+/* 英文内容优化 */
+:lang(en) {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* 数字和货币符号优化 */
+.font-numeric {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
 /* ==================== 图标系统 ==================== */
 .icon {
-  font-family: "SegoeFluent";
+  font-family: var(--font-icon);
   font-style: normal;
   font-weight: normal;
   display: inline-block;
