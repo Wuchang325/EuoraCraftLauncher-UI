@@ -69,7 +69,8 @@ class ApiValidator {
       return false
     }
 
-    if (typeof window.pywebview!.api[method] !== 'function') {
+    const api = window.pywebview!.api as unknown as Record<string, unknown>
+    if (typeof api[method] !== 'function') {
       Logger.error(`API方法 ${method} 不存在`)
       Logger.log('可用方法:', Object.keys(window.pywebview!.api))
       return false
@@ -127,7 +128,8 @@ class ApiClient {
       // 执行调用
       Logger.log(`调用 ${method}`, args.length ? '参数:' : '(无参数)', args)
       
-      const rawResult = await window.pywebview!.api[method](...args)
+      const api = window.pywebview!.api as unknown as Record<string, (...args: any[]) => Promise<any>>
+      const rawResult = await api[method](...args)
       const duration = (performance.now() - startTime).toFixed(2)
 
       // 验证响应格式
@@ -284,6 +286,14 @@ class ApiService {
 
   async loadImageFromUrl(url: string) {
     return this.client.call<{ path: string }>('load_image_from_url', url)
+  }
+
+  async fetchImageDataUrl(url: string) {
+    return this.client.call<{ dataUrl: string }>('fetch_image_data_url', url)
+  }
+
+  async getAvatarDataUrl(uuid: string, typeName: string = 'Mojang', customServer?: string, size: number = 64, useDefaultSkin: boolean = false) {
+    return this.client.call<{ dataUrl: string }>('get_avatar_data_url', uuid, typeName, customServer, size, useDefaultSkin)
   }
 
   async selectLocalImage() {

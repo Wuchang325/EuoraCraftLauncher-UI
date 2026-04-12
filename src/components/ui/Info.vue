@@ -2,10 +2,10 @@
   <div class="info-panel" :class="{ collapsed: isCollapsed }">
     <div class="info-header" @click="toggleCollapse">
       <div class="header-left">
-        <i class="icon icon-info" />
+        <UiIcon name="info" />
         <span class="info-title">系统信息</span>
       </div>
-      <i class="icon icon-arrow-right toggle-icon" :class="{ rotated: !isCollapsed }" />
+      <UiIcon name="arrow-right" class="toggle-icon" :class="{ rotated: !isCollapsed }" />
     </div>
     
     <div class="info-content" v-show="!isCollapsed">

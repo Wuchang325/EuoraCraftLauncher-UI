@@ -94,6 +94,7 @@ export interface PyWebViewAPI {
   
   // 诊断工具（新增）
   diagnose_api?(): Promise<any>
+  fetch_image_data_url?(url: string): Promise<any>
 }
 
 declare global {

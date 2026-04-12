@@ -2,7 +2,7 @@
   <div class="instances-container">
     <div class="header">
       <h2 class="title">
-        <i class="icon icon-folder" />
+        <UiIcon name="folder" />
         {{ t('instances.title') }}
       </h2>
       <UiButton icon="icon-add">{{ t('common.add') }}</UiButton>
@@ -10,7 +10,7 @@
     
     <div class="content">
       <div class="placeholder-content">
-        <i class="icon icon-folder" style="font-size: 48px; color: var(--text-disabled);" />
+        <UiIcon name="folder" class="placeholder-icon" style="font-size: 48px; color: var(--text-disabled);" />
         <p>{{ t('common.loading') }}</p>
         <UiButton variant="secondary" @click="createInstance">{{ t('common.add') }}</UiButton>
       </div>

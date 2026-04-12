@@ -16,7 +16,7 @@
 import { ref, onMounted, defineAsyncComponent, computed, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import gsap from 'gsap'
-import '@/style/views/Versions.css'
+import '@/styles/views/Versions.css'
 import UiTabs from '@/components/ui/Tabs.vue'
 
 const ManageTab = defineAsyncComponent(() => import('./versions/ManageTab.vue'))

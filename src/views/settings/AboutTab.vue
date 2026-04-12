@@ -12,17 +12,17 @@
         
         <div class="about-links">
           <a class="link-item" @click="openLink('https://github.com/ECLteam')">
-            <i class="icon icon-globe link-icon" />
+            <UiIcon name="globe" class="link-icon" />
             <span class="link-text">GitHub</span>
           </a>
           <!--<a class="link-item" 
           @click="showContact"
           >
-            <i class="icon icon-info link-icon" />
+            <UiIcon name="info" class="link-icon" />
             <span class="link-text">联系我们</span>
           </a>
           <a class="link-item" @click="openLink('https://www.mcbbs.net/')">
-            <i class="icon icon-globe link-icon" />
+            <UiIcon name="globe" class="link-icon" />
             <span class="link-text">MCBBS</span>
           </a>-->
         </div>
@@ -66,7 +66,7 @@ const openLink = (url: string) => {
 }*/
 </script>
 
-<style scoped src="@/style/views/Settings.css"></style>
+<style scoped src="@/styles/views/Settings.css"></style>
 
 <style scoped>
 .tab-pane {

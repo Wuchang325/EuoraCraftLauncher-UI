@@ -5,7 +5,7 @@
       <div class="panel paths-panel">
         <div class="panel-header">
           <h3>
-            <i class="icon icon-folder" />
+            <UiIcon name="folder" />
             {{ t('versions.manage.gamePath') }}
           </h3>
           <UiButton
@@ -27,7 +27,7 @@
             @click="selectPath(index)"
           >
             <div class="path-info">
-              <i class="icon icon-folder"></i>
+              <UiIcon name="folder" />
               <div class="path-text-wrapper">
                 <span class="path-name">{{ item.name || t('versions.manage.unnamedPath') }}</span>
                 <span class="path-location" :title="item.path">{{ item.path }}</span>
@@ -53,7 +53,7 @@
                 @click.stop="removePath(index)"
               />
               <span v-if="item.protected" class="protected-badge">
-                <i class="icon icon-lock"></i>
+                <UiIcon name="lock" />
               </span>
             </div>
           </div>
@@ -69,7 +69,7 @@
         <div class="panel-header">
           <div class="header-left">
             <h3>
-              <i class="icon icon-cube" />
+              <UiIcon name="cube" />
               {{ currentPathName }}
             </h3>
             <span v-if="currentPathVersions.length > 0" class="version-count">
@@ -99,19 +99,19 @@
         <div class="panel-content">
           <!-- 未选择路径 -->
           <div v-if="selectedPathIndex === -1" class="empty-state">
-            <i class="icon icon-folder" />
+            <UiIcon name="folder" />
             <p>{{ t('versions.manage.selectPathHint') }}</p>
           </div>
           
           <!-- 加载中 -->
           <div v-else-if="loading" class="loading-container">
-            <i class="icon icon-spinner spin" style="font-size: 32px;"></i>
+            <UiIcon name="spinner" class="spin" style="font-size: 32px;" />
             <p>{{ t('versions.manage.scanning') }}</p>
           </div>
 
           <!-- 空状态 -->
           <div v-else-if="currentPathVersions.length === 0" class="empty-state">
-            <i class="icon icon-cube" />
+            <UiIcon name="cube" />
             <p>{{ t('versions.manage.noVersionsFound') }}</p>
             <p class="hint">{{ t('versions.manage.currentPath') }}: {{ currentPath?.path }}</p>
           </div>
@@ -129,7 +129,7 @@
             >
               <div class="version-card-header">
                 <div class="version-icon">
-                  <i class="icon" :class="getLoaderIcon(version.loader_type)" />
+                  <UiIcon :name="getLoaderIcon(version.loader_type).replace('icon-', '')" />
                 </div>
                 <div class="version-info">
                   <h4 class="version-name">{{ version.folder }}</h4>
@@ -170,7 +170,7 @@
                   </span>
                 </div>
                 <div v-if="version.error" class="error-message">
-                  <i class="icon icon-warning" />
+                  <UiIcon name="warning" />
                   <span>{{ version.error }}</span>
                 </div>
               </div>
@@ -184,6 +184,8 @@
     <ContentModal
       v-model:visible="showPathModal"
       :title="isEditing ? t('versions.manage.editPath') : t('versions.manage.addGamePath')"
+      show-backdrop
+      backdrop-blur
     >
       <div class="path-form">
         <div class="form-group">
@@ -200,11 +202,20 @@
             <UiInput
               v-model="pathForm.path"
               :placeholder="t('versions.manage.pathLocationPlaceholder')"
-              readonly
+              :readonly="isDefaultPath"
+              :class="{ 'disabled-input': isDefaultPath }"
             />
-            <UiButton variant="secondary" @click="browseForPath">
+            <UiButton 
+              variant="secondary" 
+              @click="browseForPath"
+              :disabled="isDefaultPath"
+            >
               {{ t('common.browse') }}
             </UiButton>
+          </div>
+          <div v-if="isDefaultPath" class="path-tip">
+            <UiIcon name="info" size="14" />
+            {{ t('versions.manage.defaultPathTip') }}
           </div>
         </div>
       </div>
@@ -377,6 +388,13 @@ const browseForPath = async () => {
   }
 }
 
+// 检查是否为默认路径
+const isDefaultPath = computed(() => {
+  if (!isEditing.value || editingIndex.value < 0) return false
+  const path = gamePaths.value[editingIndex.value]
+  return path.protected || path.path.includes('.minecraft')
+})
+
 const savePath = async () => {
   if (!pathForm.value.name || !pathForm.value.path) return
   
@@ -387,16 +405,20 @@ const savePath = async () => {
       
       if (isEditing.value && editingIndex.value >= 0) {
         // 编辑模式
-        updatedPaths[editingIndex.value] = { ...pathForm.value }
+        const originalPath = gamePaths.value[editingIndex.value]
+        // 如果是默认路径，保持原路径不变，只更新名称
+        if (isDefaultPath.value) {
+          updatedPaths[editingIndex.value] = {
+            ...originalPath,
+            name: pathForm.value.name
+          }
+        } else {
+          updatedPaths[editingIndex.value] = { ...pathForm.value }
+        }
       } else {
         // 添加模式
         updatedPaths.push({ ...pathForm.value })
       }
-      
-      await api.updateGameConfig({ 
-        ...configResponse.data, 
-        minecraft_paths: updatedPaths as any
-      })
       
       gamePaths.value = updatedPaths
       message.success(isEditing.value ? t('versions.manage.pathUpdated') : t('versions.manage.pathAdded'), 2000)

@@ -117,7 +117,8 @@
       "preparingLaunch": "Preparing to launch \"{folder}\"...",
       "versionList": "Version List",
       "protectedPath": "Default path cannot be deleted",
-      "confirmDeletePath": "Are you sure you want to delete path \"{name}\"?"
+      "confirmDeletePath": "Are you sure you want to delete path \"{name}\"?",
+      "defaultPathTip": "Default path cannot change location but can change name"
     },
     "mods": {
       "title": "Mod Management",

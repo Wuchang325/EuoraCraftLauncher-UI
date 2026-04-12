@@ -22,7 +22,7 @@
           <div class="custom-select" :class="{ open: isJavaOpen }" ref="javaSelectRef">
             <div class="select-trigger" @click="toggleJavaOpen">
               <span class="selected-text">{{ selectedJavaLabel || t('settings.javaPathPlaceholder') }}</span>
-              <i class="icon icon-arrow-right select-arrow" :class="{ rotated: isJavaOpen }" />
+              <UiIcon name="arrow-right" class="select-arrow" :class="{ rotated: isJavaOpen }" />
             </div>
             <transition name="select-dropdown">
               <div v-show="isJavaOpen" class="select-dropdown">
@@ -37,7 +37,7 @@
                     <span class="option-label">Java {{ java.major_version }} ({{ java.java_type }})</span>
                     <span class="option-desc">{{ java.version }} - {{ java.arch }}</span>
                   </div>
-                  <i v-if="localSettings.javaPath === java.path" class="icon icon-check check-icon" />
+                  <UiIcon v-if="localSettings.javaPath === java.path" name="check" class="check-icon" />
                 </div>
               </div>
             </transition>
@@ -259,11 +259,6 @@ const formatMemory = (mb: number): string => {
   return mb + ' MB'
 }
 
-// 加载系统内存信息（暂不支持）
-const loadSystemMemory = async () => {
-  // 后端已移除 get_system_memory 接口
-  systemMemory.value = null
-}
 
 // 加载 Java 列表
 const loadJavaList = async () => {
@@ -369,172 +364,8 @@ const handleClickOutside = (e: MouseEvent) => {
 onMounted(() => {
   loadJavaList()
   loadGameConfig()
-  loadSystemMemory()
   document.addEventListener('click', handleClickOutside)
 })
 </script>
 
-<style scoped src="@/style/views/Settings.css"></style>
-
-<style scoped>
-.tab-pane {
-  max-width: 100%;
-  margin: 0;
-}
-
-.java-selector {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.java-selector .custom-select {
-  width: 200px;
-}
-
-.memory-manual-section {
-  padding: 0 12px;
-}
-
-.memory-value {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-primary);
-}
-
-/* 内存可视化 - 玻璃拟态风格 */
-.memory-visualization {
-  margin-top: 8px;
-  padding: 16px;
-  background: var(--bg-surface);
-  backdrop-filter: blur(var(--blur-md));
-  -webkit-backdrop-filter: blur(var(--blur-md));
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
-  transition: var(--transition-normal);
-}
-
-.memory-bar-container {
-  margin-bottom: 16px;
-}
-
-.memory-bar {
-  height: 20px;
-  background: var(--bg-app);
-  border-radius: var(--radius-full);
-  overflow: hidden;
-  display: flex;
-  position: relative;
-  border: 1px solid var(--border-color);
-}
-
-.memory-segment {
-  height: 100%;
-  transition: width var(--duration-normal) var(--ease-standard);
-}
-
-.memory-used {
-  background: var(--color-error);
-  opacity: 0.8;
-}
-
-.memory-game {
-  background: var(--color-primary);
-}
-
-.memory-labels {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 8px;
-  font-size: 11px;
-  color: var(--text-secondary);
-}
-
-/* 滑动条 - 与 Settings.css 保持一致 */
-.slider-wrapper {
-  margin: 16px 0;
-}
-
-.memory-slider {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 5px;
-  border-radius: 3px;
-  background: var(--bg-app);
-  outline: none;
-  cursor: pointer;
-  border: 1px solid var(--border-color);
-}
-
-.memory-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--color-primary);
-  cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition: var(--transition-fast);
-  border: 2px solid white;
-}
-
-.memory-slider::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
-  box-shadow: var(--shadow-md);
-  background: var(--color-primary-hover);
-}
-
-/* 内存统计 - 简洁列表 */
-.memory-stats {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-top: 12px;
-  border-top: 1px solid var(--divider-color);
-}
-
-.memory-stat-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  padding: 4px 0;
-}
-
-.stat-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.memory-used-dot {
-  background: var(--color-error);
-}
-
-.memory-game-dot {
-  background: var(--color-primary);
-}
-
-.memory-remaining-dot {
-  background: var(--bg-surface-active);
-  border: 1px solid var(--border-color);
-}
-
-.stat-label {
-  color: var(--text-secondary);
-  flex: 1;
-}
-
-.stat-value {
-  color: var(--text-primary);
-  font-weight: 500;
-}
-
-.stat-value.highlight {
-  color: var(--color-primary);
-  font-weight: 600;
-}
-</style>
+<style scoped src="@/styles/views/Settings.css"></style>

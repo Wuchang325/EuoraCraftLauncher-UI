@@ -23,6 +23,9 @@
 		"vite": "^7.2.4"
 	},
 	"dependencies": {
+		"@iconify-json/hugeicons": "^1.2.25",
+		"@iconify/json": "^2.2.460",
+		"@iconify/vue": "^5.0.0",
 		"@vicons/ionicons5": "^0.13.0",
 		"@vitejs/plugin-vue": "^6.0.3",
 		"gsap": "^3.12.7",

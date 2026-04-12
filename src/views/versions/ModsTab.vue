@@ -3,7 +3,7 @@
     <div class="toolbar">
       <div class="toolbar-left">
         <h3 class="toolbar-title">
-          <i class="icon icon-cube" />
+          <UiIcon name="cube" />
           {{ t('versions.mods.title') }}
         </h3>
       </div>
@@ -23,12 +23,12 @@
 
     <div class="panel" style="flex: 1; overflow: hidden;">
       <div v-if="loading" class="loading-container">
-        <i class="icon icon-spinner spin" style="font-size: 32px;"></i>
+        <UiIcon name="spinner" class="spin" style="font-size: 32px;" />
         <p>{{ t('common.loading') }}</p>
       </div>
       
       <div v-else-if="filteredMods.length === 0" class="empty-state">
-        <i class="icon icon-cube" />
+        <UiIcon name="cube" />
         <p>{{ t('versions.mods.noMods') }}</p>
         <UiButton variant="secondary" size="sm" @click="addMod">{{ t('versions.mods.addOne') }}</UiButton>
       </div>
@@ -43,7 +43,7 @@
           <div class="mod-content-wrapper">
             <div class="mod-icon">
               <img v-if="mod.icon" :src="mod.icon" :alt="mod.name" />
-              <i v-else class="icon icon-cube" />
+              <UiIcon v-else name="cube" />
             </div>
             <div class="mod-info">
               <div class="mod-header">

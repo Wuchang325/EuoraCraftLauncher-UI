@@ -59,9 +59,9 @@
                   
                   <!-- 未同意协议时的占位提示 
                   <div v-else class="agreement-placeholder">
-                    <i class="icon icon-info" />
+                    <UiIcon name="info" />
                     <p>{{ t('agreement.pleaseAccept') }}</p>
-                  </div>-->
+                  </div-->
                   
                   <!-- 全局消息组件 -->
                   <GlassMessage ref="messageRef" />
@@ -80,12 +80,12 @@
                   >
                     <div class="agreement-content agreement-simple">
                       <div class="agreement-icon">
-                        <i class="icon icon-file-text" />
+                        <UiIcon name="file-text" />
                       </div>
                       <h2>{{ t('agreement.pleaseRead') }}</h2>
                       <p class="agreement-desc">{{ t('agreement.description') }}</p>
                       <a :href="agreementUrl" target="_blank" class="agreement-link-btn">
-                        <i class="icon icon-external-link" />
+                        <UiIcon name="external-link" />
                         {{ t('agreement.viewFull') }}
                       </a>
                     </div>

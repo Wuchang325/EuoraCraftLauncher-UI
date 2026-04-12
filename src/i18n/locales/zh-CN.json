@@ -117,7 +117,9 @@
       "preparingLaunch": "准备启动 \"{folder}\"...",
       "versionList": "版本列表",
       "protectedPath": "默认路径不可删除",
-      "confirmDeletePath": "确定要删除路径 \"{name}\" 吗？"
+      "confirmDeletePath": "确定要删除路径 \"{name}\" 吗？",
+      "defaultPathTip": "默认路径不能修改路径位置，但可以修改名称"
+      
     },
     "mods": {
       "title": "模组管理",

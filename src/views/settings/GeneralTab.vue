@@ -2,7 +2,7 @@
   <div class="tab-pane">
     <div class="settings-group">
       <div class="group-title">
-        <i class="icon icon-brush" />
+        <UiIcon name="brush" />
         {{ t('settings.general') }}
       </div>
 
@@ -21,7 +21,7 @@
                   <span class="lang-name">{{ selectedLanguage?.name }}</span>
                 </span>
               </span>
-              <i class="icon icon-arrow-right select-arrow" :class="{ rotated: isLangOpen }" />
+              <UiIcon name="arrow-right" class="select-arrow" :class="{ rotated: isLangOpen }" />
             </div>
             <transition name="select-dropdown">
               <div v-show="isLangOpen" class="select-dropdown">
@@ -36,7 +36,7 @@
                     <span class="lang-flag">{{ lang.flag }}</span>
                     <span class="lang-name">{{ lang.name }}</span>
                   </div>
-                  <i v-if="currentLocale === lang.code" class="icon icon-check check-icon" />
+                  <UiIcon v-if="currentLocale === lang.code" name="check" class="check-icon" />
                 </div>
               </div>
             </transition>
@@ -57,7 +57,7 @@
               @click="handleThemeChange('light')"
             >
               <div class="theme-icon-wrapper">
-                <i class="icon icon-sun" />
+                <UiIcon name="sun" />
               </div>
               <span class="theme-label">{{ t('settings.themeLight') }}</span>
             </div>
@@ -67,7 +67,7 @@
               @click="handleThemeChange('dark')"
             >
               <div class="theme-icon-wrapper">
-                <i class="icon icon-moon" />
+                <UiIcon name="moon" />
               </div>
               <span class="theme-label">{{ t('settings.themeDark') }}</span>
             </div>
@@ -77,7 +77,7 @@
               @click="handleThemeChange('system')"
             >
               <div class="theme-icon-wrapper">
-                <i class="icon icon-settings" />
+                <UiIcon name="settings" />
               </div>
               <span class="theme-label">{{ t('settings.themeSystem') }}</span>
             </div>
@@ -230,7 +230,7 @@
 
     <div class="settings-group">
       <div class="group-title">
-        <i class="icon icon-download" />
+        <UiIcon name="download" />
         {{ t('settings.downloadSource') }}
       </div>
 
@@ -243,7 +243,7 @@
           <div class="custom-select" :class="{ open: isOpen }" ref="selectRef">
             <div class="select-trigger" @click="toggleOpen">
               <span class="selected-text">{{ selectedDownloadSource?.label || '请选择' }}</span>
-              <i class="icon icon-arrow-right select-arrow" :class="{ rotated: isOpen }" />
+                <UiIcon name="arrow-right" class="select-arrow" :class="{ rotated: isOpen }" />
             </div>
             <transition name="select-dropdown">
               <div v-show="isOpen" class="select-dropdown">
@@ -380,21 +380,21 @@ const saveMouseEffectConfig = () => {
   localStorage.setItem('mouseEffect', JSON.stringify(config))
 }
 
-const toggleMouseEffect = () => {
+const toggleMouseEffect = async () => {
   mouseEffectEnabled.value = !mouseEffectEnabled.value
-  saveMouseEffectConfig()
+  await saveMouseEffectConfig()
   // 触发自定义事件通知 App.vue 更新
   window.dispatchEvent(new CustomEvent('mouseEffectChange', { detail: { enabled: mouseEffectEnabled.value } }))
 }
 
-const updateMouseEffectColor = (value: string) => {
+const updateMouseEffectColor = async (value: string) => {
   mouseEffectColor.value = value
-  saveMouseEffectConfig()
+  await saveMouseEffectConfig()
   window.dispatchEvent(new CustomEvent('mouseEffectUpdate', { detail: { color: value } }))
 }
 
-const updateMouseEffectSettings = () => {
-  saveMouseEffectConfig()
+const updateMouseEffectSettings = async () => {
+  await saveMouseEffectConfig()
   window.dispatchEvent(new CustomEvent('mouseEffectUpdate', { 
     detail: { 
       scale: mouseEffectScale.value,
@@ -575,4 +575,4 @@ const handleLanguageChange = async (langCode: LocaleCode) => {
 }
 </script>
 
-<style scoped src="@/style/views/Settings.css"></style>
+<style scoped src="@/styles/views/Settings.css"></style>

@@ -6,18 +6,18 @@
     <div class="home-right" ref="homeRightRef">
       <UiCard class="account-card" body-class="account-card-body">
         <div class="account-info">
-          <img class="avatar" :src="currentAccountAvatarUrl" alt="avatar" />
+          <SkinRenderer class="avatar" :uuid="currentAccount?.uuid" :type-name="currentAccount?.type" :size="36" />
           <div class="user-details">
             <div class="name">{{ currentAccount?.alias || 'Steve' }}</div>
             <div class="type">{{ accountTypeLabel }}</div>
           </div>
-          <UiButton variant="text" size="sm" icon="icon-settings" @click="openAccountModal">
+          <UiButton variant="text" size="sm" icon="settings" @click="openAccountModal">
             {{ t('game.manage') }}
           </UiButton>
         </div>
       </UiCard>
 
-      <UiCard class="version-card" :title="t('game.gameVersion')" icon="icon-cube" body-class="version-card-body">
+      <UiCard class="version-card" :title="t('game.gameVersion')" icon="cube" body-class="version-card-body">
         <div class="version-list" ref="versionListRef">
           <div v-if="loading" class="flex-center" style="padding: 20px;">
             <span class="text-secondary">{{ t('app.loading') }}</span>
@@ -29,7 +29,7 @@
           
           <div
             v-else
-            v-for="(ver, index) in versions"
+            v-for="(ver) in versions"
             :key="ver.id"
             @click="selectVersion(ver.id)"
             :class="['version-item', { active: selectedVersion === ver.id }]"
@@ -46,7 +46,7 @@
             :disabled="launching || !selectedVersion || !currentAccount"
             :loading="launching"
             size="lg"
-            icon="icon-game"
+            icon="game"
           >
             {{ launching ? t('game.launching') : t('game.launch') }}
           </UiButton>
@@ -68,7 +68,7 @@
         <!-- 左侧：账户列表 -->
         <div class="account-list-section">
           <h3 class="section-title">
-            <i class="icon icon-folder" />
+            <UiIcon name="folder" :size="16" />
             {{ t('game.savedAccounts') }}
           </h3>
           <div class="account-list-card">
@@ -79,7 +79,7 @@
             
             <!-- 空状态 -->
             <div v-else-if="accounts.length === 0" class="empty-state">
-              <i class="icon icon-user-x" />
+              <UiIcon name="user-x" :size="16" />
               <p class="empty-state-text">{{ t('game.noAccounts') }}</p>
               <p class="text-secondary" style="font-size: 12px;">{{ t('game.noAccountsDesc') }}</p>
             </div>
@@ -91,12 +91,12 @@
                 :key="account.id"
                 :class="['account-item', { active: account.isCurrent }]"
               >
-                <img 
-                  class="acc-avatar" 
-                  :src="getAccountAvatarUrl(account)" 
-                  :data-type="account.type" 
-                  alt="avatar"
-                  @error="handleAvatarError($event, account)"
+                <SkinRenderer
+                  class="acc-avatar"
+                  :uuid="account.uuid"
+                  :type-name="account.type"
+                  :size="40"
+                  :data-type="account.type"
                 />
                 <div class="acc-info">
                   <div class="acc-name">{{ account.alias }}</div>
@@ -120,7 +120,7 @@
                   <UiButton 
                     variant="ghost" 
                     size="sm"
-                    icon="icon-delete"
+                    icon="delete"
                     @click="removeAccount(account.id, account.alias)"
                   />
                 </div>
@@ -133,7 +133,7 @@
         <div class="account-add-section">
           <!-- 添加离线账户 -->
           <h3 class="section-title">
-            <i class="icon icon-add" />
+            <UiIcon name="add" :size="16" />
             {{ t('game.addOfflineAccount') }}
           </h3>
           <div class="add-account-card">
@@ -161,7 +161,7 @@
 
           <!-- 添加微软账户 -->
           <h3 class="section-title" style="margin-top: 20px;">
-            <i class="icon icon-microsoft" />
+            <UiIcon name="microsoft" :size="16" />
             {{ t('game.addMicrosoftAccount') }}
           </h3>
           <div class="add-account-card">
@@ -171,7 +171,7 @@
               </p>
               <UiButton 
                 variant="primary" 
-                icon="icon-log-in"
+                icon="log-in"
                 :loading="startingMicrosoftLogin"
                 @click="startMicrosoftLogin"
               >
@@ -264,12 +264,13 @@ import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 import { useGlassMessage } from '@/composables/useGlassMessage'
 import { useI18n } from 'vue-i18n'
 import gsap from 'gsap'
-import '@/style/views/Game.css'
+import '@/styles/views/Game.css'
 import UiCard from '@/components/ui/Card.vue'
 import UiButton from '@/components/ui/Button.vue'
 import UiInput from '@/components/ui/Input.vue'
 import ContentModal from '@/components/modals/ContentModal.vue'
 import { api } from '@/utils/api'
+import SkinRenderer from '@/components/SkinRenderer.vue'
 
 const message = useGlassMessage()
 const { t } = useI18n()
@@ -310,30 +311,6 @@ const deleteConfirmMessage = computed(() => {
   return t('game.deleteConfirm', { name: accountToDelete.value.alias })
 })
 
-import { getAvatarUrlByUuid, getMCCAGAvatarUrl } from '@/utils/skinRenderer'
-
-// 当前账户头像 URL
-const currentAccountAvatarUrl = computed(() => {
-  return getAvatarUrlByUuid(currentAccount.value?.uuid, { size: 64, showHat: true })
-})
-
-// 获取账户头像 URL - MCCAG 风格（无背景、仅头部带帽子）
-function getAccountAvatarUrl(account: { uuid?: string; alias?: string; type?: string }): string {
-  // 微软账户使用 MCCAG API 获取更美观的渲染
-  if (account.type === 'microsoft' && account.alias) {
-    return getMCCAGAvatarUrl(account.alias, { type: 'head' })
-  }
-  // 离线账户或其他使用 Crafatar
-  return getAvatarUrlByUuid(account.uuid, { size: 64, showHat: true })
-}
-
-// 头像加载失败时使用 crafatar 后备
-function handleAvatarError(event: Event, account: { uuid?: string; alias?: string; type?: string }) {
-  const img = event.target as HTMLImageElement
-  const name = account.alias || 'Steve'
-  // 使用 crafatar renders 作为后备，确保无背景且尺寸一致
-  img.src = `https://crafatar.com/renders/head/${name}?scale=4&overlay=true&default=Steve`
-}
 
 // 账户类型标签
 const accountTypeLabel = computed(() => {
@@ -343,7 +320,6 @@ const accountTypeLabel = computed(() => {
     : t('game.offlineAccount')
 })
 
-const homeMainRef = ref<HTMLElement | null>(null)
 const homeLeftRef = ref<HTMLElement | null>(null)
 const homeRightRef = ref<HTMLElement | null>(null)
 
@@ -357,7 +333,11 @@ async function loadVersions() {
       return
     }
     
-    const scanRes = await api.scanVersions(configRes.data.minecraft_paths)
+    // 将 (string | GamePath)[] 转换为 string[]
+    const stringPaths = configRes.data.minecraft_paths.map(path => 
+      typeof path === 'string' ? path : path.path
+    )
+    const scanRes = await api.scanVersions(stringPaths)
     if (scanRes.success && scanRes.data) {
       versions.value = scanRes.data
         .filter((v: any) => v.status === 'success')
@@ -519,6 +499,7 @@ async function startMicrosoftLogin() {
   startingMicrosoftLogin.value = true
   try {
     const res = await api.startMicrosoftLogin()
+    console.log('[Game] startMicrosoftLogin 响应:', res)
     if (res.success) {
       if (res.data?.status === 'completed') {
         // 已经有缓存，直接完成
@@ -533,12 +514,29 @@ async function startMicrosoftLogin() {
         microsoftLoginStatus.value = 'pending'
         showMicrosoftLoginModal.value = true
       } else {
-        message.error(res.data?.message || t('game.login.failed'))
+        // 如果有verificationUri和userCode，说明是等待用户验证的状态
+        if (res.data?.verificationUri && res.data?.userCode) {
+          microsoftLoginData.value = {
+            userCode: res.data.userCode,
+            verificationUri: res.data.verificationUri
+          }
+          microsoftLoginStatus.value = 'pending'
+          showMicrosoftLoginModal.value = true
+        } else {
+          // 其他错误情况
+          const errorMessage = res.data?.message || res.message || t('game.login.failed')
+          message.error(errorMessage)
+          console.error('[Game] startMicrosoftLogin 失败:', errorMessage)
+        }
       }
     } else {
-      message.error(res.message || t('game.login.failed'))
+      // 处理API调用失败
+      const errorMessage = res.message || t('game.login.failed')
+      message.error(errorMessage)
+      console.error('[Game] startMicrosoftLogin API调用失败:', errorMessage)
     }
   } catch (e) {
+    console.error('[Game] startMicrosoftLogin 发生异常:', e)
     message.error(t('game.login.failed'))
   } finally {
     startingMicrosoftLogin.value = false
@@ -550,7 +548,8 @@ async function completeMicrosoftLogin() {
   microsoftLoginStatus.value = 'loading'
   try {
     const res = await api.completeMicrosoftLogin()
-    if (res.success) {
+    console.log('[Game] completeMicrosoftLogin 响应:', res)
+    if (res.success && res.data?.account) {
       message.success(t('game.login.success'))
       showMicrosoftLoginModal.value = false
       await loadAccounts()
@@ -561,11 +560,15 @@ async function completeMicrosoftLogin() {
       }
     } else {
       microsoftLoginStatus.value = 'error'
-      microsoftLoginError.value = res.message || t('game.login.failed')
+      // 优先使用后端返回的错误消息
+      microsoftLoginError.value = res.message || res.data?.message || t('game.login.failed')
+      message.error(microsoftLoginError.value)
     }
   } catch (e) {
+    console.error('[Game] completeMicrosoftLogin 错误:', e)
     microsoftLoginStatus.value = 'error'
     microsoftLoginError.value = t('game.login.failed')
+    message.error(t('game.login.failed'))
   } finally {
     completingMicrosoftLogin.value = false
   }
@@ -619,325 +622,4 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style scoped>
-.account-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.account-info .user-details {
-  flex: 1;
-}
-
-/* ==================== 账户管理弹窗内容 - 设置页风格 ==================== */
-.account-manager {
-  display: flex;
-  gap: 16px;
-  padding: 16px;
-  height: 100%;
-}
-
-/* 左侧：已保存账户列表 */
-.account-list-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.section-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0 0 12px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.section-title .icon {
-  color: var(--color-primary);
-  font-size: 16px;
-}
-
-.account-list-card {
-  flex: 1;
-  background: var(--bg-surface);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-  padding: 12px;
-  overflow-y: auto;
-}
-
-.account-items {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.account-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  background: var(--bg-app);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-  transition: var(--transition-fast);
-}
-
-.account-item:hover {
-  border-color: var(--color-primary);
-  background: var(--bg-surface-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
-}
-
-.account-item.active {
-  border-color: var(--color-primary);
-  background: var(--color-primary-light);
-}
-
-.acc-avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 0;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  font-weight: 600;
-  color: white;
-  flex-shrink: 0;
-  overflow: hidden;
-  /* 像素化渲染 */
-  image-rendering: pixelated;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: -webkit-crisp-edges;
-  image-rendering: crisp-edges;
-  -ms-interpolation-mode: nearest-neighbor;
-}
-
-.acc-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  image-rendering: pixelated;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: -webkit-crisp-edges;
-  image-rendering: crisp-edges;
-  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.25));
-}
-
-.acc-avatar span {
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-}
-
-.acc-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.acc-name {
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.acc-type {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 11px;
-}
-
-.type-badge {
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
-  font-weight: 500;
-  font-size: 10px;
-}
-
-.type-badge.microsoft {
-  background: rgba(0, 120, 212, 0.15);
-  color: #0078d4;
-}
-
-.type-badge.offline {
-  background: rgba(100, 116, 139, 0.15);
-  color: #64748b;
-}
-
-.acc-email {
-  color: var(--text-secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.acc-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.acc-status {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--color-primary);
-  padding: 4px 10px;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: var(--radius-sm);
-}
-
-[data-theme="dark"] .acc-status {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-/* 右侧：添加账户 - 设置页风格 */
-.account-add-section {
-  width: 280px;
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-}
-
-.add-account-card {
-  background: var(--bg-surface);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-  padding: 12px;
-}
-
-.add-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.form-label {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-
-.form-hint {
-  font-size: 11px;
-  color: var(--text-disabled);
-  margin-top: 2px;
-  line-height: 1.4;
-}
-
-/* 空状态 */
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  color: var(--text-secondary);
-  text-align: center;
-}
-
-.empty-state .icon {
-  font-size: 48px;
-  margin-bottom: 16px;
-  opacity: 0.4;
-}
-
-.empty-state-text {
-  font-size: 14px;
-  margin-bottom: 4px;
-}
-
-/* 微软登录弹窗 */
-.microsoft-login-content {
-  padding: 8px;
-}
-
-.login-pending {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.login-step {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.step-label {
-  font-size: 13px;
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-.login-link {
-  font-size: 14px;
-  color: var(--color-primary);
-  word-break: break-all;
-  padding: 10px 14px;
-  background: var(--bg-app);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-  text-decoration: none;
-}
-
-.login-link:hover {
-  background: var(--bg-surface-hover);
-}
-
-.user-code-box {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: var(--bg-app);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-}
-
-.user-code {
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--text-primary);
-  letter-spacing: 2px;
-  flex: 1;
-}
-
-.login-waiting {
-  text-align: center;
-  font-size: 13px;
-  color: var(--text-secondary);
-  margin-top: 8px;
-}
-
-.login-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-}
-
-.login-error {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-  text-align: center;
-}
-</style>
+<style scoped src="@/styles/views/Game.css"></style>

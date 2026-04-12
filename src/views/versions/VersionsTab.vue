@@ -3,7 +3,7 @@
     <div class="toolbar">
       <div class="toolbar-left">
         <h3 class="toolbar-title">
-          <i class="icon icon-cube" />
+          <UiIcon name="cube" />
           {{ t('versions.download.installNew') }}
         </h3>
       </div>
@@ -36,12 +36,12 @@
 
     <div class="panel versions-list-container">
       <div v-if="loading" class="loading-container">
-        <i class="icon icon-spinner spin" style="font-size: 32px;"></i>
+        <UiIcon name="spinner" class="spin" style="font-size: 32px;" />
         <p>{{ t('versions.download.fetchingList') }}</p>
       </div>
 
       <div v-else-if="filteredVersions.length === 0" class="empty-state">
-        <i class="icon icon-cube" />
+        <UiIcon name="cube" />
         <p>{{ t('versions.download.noVersions') }}</p>
       </div>
 
@@ -53,7 +53,7 @@
         >
           <div class="version-card-header">
             <div class="version-icon">
-              <i class="icon icon-cube" />
+              <UiIcon name="cube" />
             </div>
             <div class="version-info">
               <h4 class="version-name">{{ version.id }}</h4>

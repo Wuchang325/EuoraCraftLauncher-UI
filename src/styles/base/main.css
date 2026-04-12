@@ -3,8 +3,8 @@
 @import './base.css';
 @import './animations.css';
 @import './layout.css';
-@import './components/TitleBar.css';
-@import './components/SideBar.css';
+@import '../components/TitleBar.css';
+@import '../components/SideBar.css';
 
 /* 全局样式优化 */
 
@@ -22,8 +22,10 @@
 
 /* 禁用图片拖拽 */
 img {
-  -webkit-user-drag: none;
-  user-select: none;
+  -webkit-user-drag: none; /* Safari, Chrome */
+  -moz-user-select: none; /* Firefox */
+  -webkit-user-select: none; /* Safari, iOS Safari */
+  user-select: none; /* Standard */
 }
 
 /* 链接样式 */

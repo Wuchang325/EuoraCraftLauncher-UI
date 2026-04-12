@@ -9,6 +9,7 @@ export default defineConfig({
     vue(),
     Components()
   ],
+  publicDir: 'public',
   resolve: {
     alias: {
       '@': resolve(__dirname, './src')

@@ -4,7 +4,7 @@
       variant="ghost"
       shape="circle"
       size="md"
-      icon="icon-menu"
+      icon="menu"
       :title="t('sidebar.toggle')"
       @click="toggleSidebar"
       class="toggle-btn"
@@ -22,7 +22,7 @@
         @mouseenter="handleMouseEnter(index)"
         @click.prevent="handleItemClick(item)"
       >
-        <i :class="['icon', item.icon]" />
+        <UiIcon :name="item.iconName" :size="20" />
         <span class="text">{{ item.label }}</span>
       </a>
     </nav>
@@ -35,19 +35,17 @@
         :title="t('sidebar.debugTitle')"
         @click.prevent="handleItemClick({ path: '/dev' })"
       >
-        <i class="icon icon-bug" />
+        <UiIcon name="bug" :size="20" />
         <span class="text">{{ t('sidebar.debug') }}</span>
       </a>
-      <UiButton 
-        variant="ghost"
-        size="md"
-        icon="icon-help"
+      <a
+        class="menu-item"
         :title="t('sidebar.help')"
-        @click="openHelp"
-        class="sidebar-help-btn"
+        @click.prevent="openHelp"
       >
-        {{ t('sidebar.help') }}
-      </UiButton>
+        <UiIcon name="help" :size="20" />
+        <span class="text">{{ t('sidebar.help') }}</span>
+      </a>
     </div>
   </aside>
   
@@ -62,7 +60,7 @@ import { useI18n } from 'vue-i18n'
 import { useFullscreenModal } from '@/composables/useFullscreenModal'
 import UiButton from '@/components/ui/Button.vue'
 import { api } from '@/utils/api'
-import '@/style/components/SideBar.css'
+import '@/styles/components/SideBar.css'
 
 // 禁用自动属性继承，因为组件有多个根元素
 defineOptions({
@@ -106,10 +104,10 @@ onMounted(async () => {
 })
 
 const menuItems = computed(() => [
-  { path: '/', label: t('sidebar.game'), icon: 'icon-game' },
-  { path: '/versions', label: t('sidebar.versions'), icon: 'icon-cube' },
-  { path: '/instances', label: t('sidebar.instances'), icon: 'icon-folder' },
-  { path: '/settings', label: t('sidebar.settings'), icon: 'icon-settings' }
+  { path: '/', label: t('sidebar.game'), iconName: 'game' },
+  { path: '/versions', label: t('sidebar.versions'), iconName: 'cube' },
+  { path: '/instances', label: t('sidebar.instances'), iconName: 'folder' },
+  { path: '/settings', label: t('sidebar.settings'), iconName: 'settings' }
 ])
 
 const toggleSidebar = () => {

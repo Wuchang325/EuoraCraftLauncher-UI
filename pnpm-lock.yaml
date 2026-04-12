@@ -8,6 +8,15 @@ importers:
 
   .:
     dependencies:
+      '@iconify-json/hugeicons':
+        specifier: ^1.2.25
+        version: 1.2.25
+      '@iconify/json':
+        specifier: ^2.2.460
+        version: 2.2.460
+      '@iconify/vue':
+        specifier: ^5.0.0
+        version: 5.0.0(vue@3.5.29(typescript@5.9.3))
       '@vicons/ionicons5':
         specifier: ^0.13.0
         version: 0.13.0
@@ -270,6 +279,20 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
+
+  '@iconify-json/hugeicons@1.2.25':
+    resolution: {integrity: sha512-yjEaMYvU0EVymz3iJAcedoOyh0hbgwGkhq/CWtnXEmjvgQOR0LHHtqsRWwzebzAfeLj7SFShFhOQPnmZPMPOEg==}
+
+  '@iconify/json@2.2.460':
+    resolution: {integrity: sha512-WVtlJMsLYp/s7SzIhTOgIOYMMlS6xJC1s6/jJz4Z8wP8RoxP1OaueT1Bg2YrxJ+BEjHlpvzG3RdirbjxdH8bvA==}
+
+  '@iconify/types@2.0.0':
+    resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
+
+  '@iconify/vue@5.0.0':
+    resolution: {integrity: sha512-C+KuEWIF5nSBrobFJhT//JS87OZ++QDORB6f2q2Wm6fl2mueSTpFBeBsveK0KW9hWiZ4mNiPjsh6Zs4jjdROSg==}
+    peerDependencies:
+      vue: '>=3'
 
   '@intlify/core-base@10.0.7':
     resolution: {integrity: sha512-mE71aUH5baH0me8duB4FY5qevUJizypHsYw3eCvmOx07QvmKppgOONx3dYINxuA89Z2qkAGb/K6Nrpi7aAMwew==}
@@ -1759,6 +1782,22 @@ snapshots:
 
   '@esbuild/win32-x64@0.27.3':
     optional: true
+
+  '@iconify-json/hugeicons@1.2.25':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify/json@2.2.460':
+    dependencies:
+      '@iconify/types': 2.0.0
+      pathe: 2.0.3
+
+  '@iconify/types@2.0.0': {}
+
+  '@iconify/vue@5.0.0(vue@3.5.29(typescript@5.9.3))':
+    dependencies:
+      '@iconify/types': 2.0.0
+      vue: 3.5.29(typescript@5.9.3)
 
   '@intlify/core-base@10.0.7':
     dependencies:

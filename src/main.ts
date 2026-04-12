@@ -4,7 +4,8 @@ import router from '@/router'
 import App from '@/App.vue'
 import { initTheme } from '@/composables/useTheme'
 import { i18n, loadLocaleFromBackend, getCurrentLocale } from '@/i18n'
-import '@/style/main.css'
+import UiIcon from './components/ui/Icon.vue'
+import '@/styles/base/main.css'
 
 initTheme()
 document.documentElement.setAttribute('lang', getCurrentLocale())
@@ -14,6 +15,7 @@ const app = createApp(App)
 app.use(router)
 app.use(naive)
 app.use(i18n)
+app.component('UiIcon', UiIcon)
 app.mount('#app')
 
 if (window.pywebview?.api) {

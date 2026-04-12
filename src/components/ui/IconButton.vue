@@ -23,22 +23,22 @@
     
     <!-- 加载状态 -->
     <span v-if="loading" class="icon-btn__loader">
-      <i class="icon icon-loading" />
+      <UiIcon name="loading" :size="16" />
     </span>
     
     <!-- 图标 -->
-    <span v-else class="icon-btn__icon">
-      <i :class="['icon', icon]" />
+    <span v-else-if="props.icon" class="icon-btn__icon">
+      <UiIcon :name="iconName" :size="16" :class="iconClasses" />
     </span>
   </button>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 interface Props {
-  /** 图标类名 */
-  icon: string
+  /** 图标名称或类名 */
+  icon?: string
   /** 按钮变体 */
   variant?: 'default' | 'primary' | 'danger' | 'ghost'
   /** 按钮尺寸 */
@@ -52,11 +52,20 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  icon: '',
   variant: 'default',
   size: 'md',
   background: false,
   disabled: false,
   loading: false
+})
+
+const iconName = computed(() => {
+  return props.icon.split(' ')[0].replace(/^icon-/, '')
+})
+
+const iconClasses = computed(() => {
+  return props.icon.split(' ').slice(1)
 })
 
 const emit = defineEmits<{

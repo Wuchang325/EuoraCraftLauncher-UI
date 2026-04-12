@@ -1,6 +1,6 @@
 <template>
   <div class="ui-input-wrapper" :class="{ 'is-focused': isFocused, 'is-disabled': disabled }">
-    <i v-if="prefixIcon" :class="['icon', prefixIcon, 'prefix-icon']" />
+    <UiIcon v-if="prefixIcon" :name="prefixIcon.replace('icon-', '')" class="prefix-icon" />
     
     <input
       ref="inputRef"
@@ -16,13 +16,14 @@
       @keydown.enter="$emit('enter')"
     />
     
-    <i 
+    <UiIcon 
       v-if="clearable && modelValue" 
-      class="icon icon-close clear-icon" 
+      name="close" 
+      class="clear-icon" 
       @click="handleClear"
     />
     
-    <i v-if="suffixIcon" :class="['icon', suffixIcon, 'suffix-icon']" />
+    <UiIcon v-if="suffixIcon" :name="suffixIcon.replace('icon-', '')" class="suffix-icon" />
   </div>
 </template>
 

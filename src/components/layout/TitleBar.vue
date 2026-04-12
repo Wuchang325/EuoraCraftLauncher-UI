@@ -61,7 +61,10 @@ import { useI18n } from 'vue-i18n'
 import { useTheme } from '@/composables/useTheme'
 import { useFullscreenModal } from '@/composables/useFullscreenModal'
 import UiButton from '@/components/ui/Button.vue'
-import '@/style/components/TitleBar.css'
+import '@/styles/components/TitleBar.css'
+import { 
+  //watch, 
+  computed } from 'vue'
 
 const { t } = useI18n()
 const { isDark, toggleTheme } = useTheme()
@@ -70,15 +73,12 @@ const fullscreenModal = useFullscreenModal()
 const isFullscreenModalVisible = computed(() => fullscreenModal.isVisible.value)
 const fullscreenModalTitle = computed(() => fullscreenModal.title.value)
 
-// 调试：监听 fullscreenModal 变化
-import { watch, computed } from 'vue'
+// 监听 fullscreenModal 变化
+/*
 watch(() => fullscreenModal.isVisible.value, (val) => {
   console.log('[TitleBar] fullscreenModal.isVisible 变化:', val)
-}, { immediate: true })
-
-declare global {
-  interface Window { pywebview: any }
-}
+}, 
+{ immediate: true })*/
 
 const minimize = () => window.pywebview?.api.minimize_window()
 const close = () => window.pywebview?.api.close_window()
